@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+    web:
+        build:
+            context: ./docker/nginx
+        container_name: symfony_nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - ./src:/var/www/html/sales
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - php
+            - rabbitmq
+        networks:
+            - app-network
+
+    php:
+        build:
+            context: ./docker/php
+        container_name: symfony_php
+        volumes:
+            - ./src:/var/www/html
+        environment:
+            - OPERATION_MODE=DEV
+            - PHP_EXTENSION_YAML=1
+        networks:
+            - app-network
+
+    rabbitmq:
+        image: "rabbitmq:3-management"
+        container_name: symfony_rabbitmq
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        networks:
+            - app-network
+
+    db:
+        image: mysql:latest
+        container_name: symfony_db
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+            MYSQL_DATABASE: symfony
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    db_data:
