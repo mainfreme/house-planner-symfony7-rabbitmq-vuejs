@@ -24,7 +24,7 @@ jobs:
                   extensions: mbstring, xml, ctype, iconv, pdo_mysql
 
             - name: Install dependencies
-              run: composer install --prefer-dist --no-progress
+              run: composer install --prefer-dist
 
             - name: Run PHPStan
               run: vendor/bin/phpstan analyse --configuration=phpstan.neon
