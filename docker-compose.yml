@@ -1,58 +1,86 @@
 version: '3.8'
 
+networks:
+    symfony_network:
+        driver: bridge
+
 services:
-    web:
+    app:
         build:
-            context: ./docker/nginx
+            context: ./docker/php
+            dockerfile: Dockerfile
+        container_name: symfony_app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./shop:/var/www
+        environment:
+            - APP_ENV=dev
+            - DATABASE_URL=pgsql://symfony:symfony@db:5432/symfony
+            - RABBITMQ_DSN=amqp://guest:guest@rabbitmq:5672/
+        depends_on:
+            - db
+            - rabbitmq
+            - redis
+        networks:
+            - symfony_network
+
+    nginx:
+        image: nginx:latest
         container_name: symfony_nginx
+        restart: unless-stopped
         ports:
             - "8080:80"
         volumes:
-            - ./src:/var/www/html/sales
-            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./shop:/var/www
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
-            - php
-            - rabbitmq
+            - app
         networks:
-            - app-network
+            - symfony_network
 
-    php:
-        build:
-            context: ./docker/php
-        container_name: symfony_php
-        volumes:
-            - ./src:/var/www/html
+    db:
+        image: postgres:latest
+        container_name: symfony_db
+        restart: unless-stopped
         environment:
-            - OPERATION_MODE=DEV
-            - PHP_EXTENSION_YAML=1
+            POSTGRES_DB: symfony
+            POSTGRES_USER: symfony
+            POSTGRES_PASSWORD: symfony
+        ports:
+            - "5432:5432"
+        volumes:
+            - db_data:/var/lib/postgresql/data
         networks:
-            - app-network
+            - symfony_network
 
     rabbitmq:
-        image: "rabbitmq:3-management"
+        image: rabbitmq:3-management
         container_name: symfony_rabbitmq
+        restart: unless-stopped
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
         ports:
             - "5672:5672"
             - "15672:15672"
-        networks:
-            - app-network
-
-    db:
-        image: mysql:latest
-        container_name: symfony_db
-        environment:
-            MYSQL_ROOT_PASSWORD: example
-            MYSQL_DATABASE: symfony
-            MYSQL_USER: user
-            MYSQL_PASSWORD: password
         volumes:
-            - db_data:/var/lib/mysql
+            - rabbitmq_data:/var/lib/rabbitmq
         networks:
-            - app-network
+            - symfony_network
 
-networks:
-    app-network:
-        driver: bridge
+    redis:
+        image: redis:latest
+        container_name: symfony_redis
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        networks:
+            - symfony_network
 
 volumes:
     db_data:
+    rabbitmq_data:
+    redis_data:
