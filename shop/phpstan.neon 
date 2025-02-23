@@ -1,0 +1,9 @@
+parameters:
+    level: max
+    paths:
+        - src
+    ignoreErrors: []
+
+    # Opcjonalnie, jeśli masz pliki bootstrap
+    bootstrapFiles:
+        - tests/bootstrap.php

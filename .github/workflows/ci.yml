@@ -24,13 +24,13 @@ jobs:
                   extensions: mbstring, xml, ctype, iconv, pdo_mysql
 
             - name: Install dependencies
-              run: composer install --prefer-dist --no-progress --no-suggest
+              run: composer install --prefer-dist --no-progress
 
             - name: Run PHPStan
-              run: phpstan analyse src --level=max
+              run: vendor/bin/phpstan analyse --configuration=phpstan.neon
 
             - name: Run PHP CS Fixer
-              run: php-cs-fixer fix --dry-run --diff
+              run: php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php
 
             - name: Run PHPUnit tests
-              run: vendor/bin/phpunit tests
+              run: vendor/bin/phpunit --configuration=phpunit.xml
