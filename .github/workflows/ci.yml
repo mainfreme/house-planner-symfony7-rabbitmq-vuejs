@@ -26,9 +26,6 @@ jobs:
             - name: Install dependencies
               run: cd shop && composer install --prefer-dist
 
-            - name: Debug CI files
-              run: ls -la shop
-
             - name: Run PHPStan
               run: cd shop && vendor/bin/phpstan analyse --configuration=phpstan.neon
 
