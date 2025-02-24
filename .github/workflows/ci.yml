@@ -26,11 +26,14 @@ jobs:
             - name: Install dependencies
               run: cd shop && composer install --prefer-dist
 
+            - name: Debug CI files
+              run: ls -la shop
+
             - name: Run PHPStan
-              run: cd shop && vendor/bin/phpstan analyse --configuration=phpstan.neon
+              run: cd shop && vendor/bin/phpstan analyse --configuration=./phpstan.neon
 
             - name: Run PHP CS Fixer
-              run: cd shop && php-cs-fixer fix --dry-run --diff --config=php-cs-fixer.php
+              run: cd shop && php-cs-fixer fix --dry-run --diff --config=./php-cs-fixer.php
 
             - name: Run PHPUnit tests
-              run: cd shop && vendor/bin/phpunit --configuration=phpunit.xml
+              run: cd shop && vendor/bin/phpunit --configuration=./phpunit.xml
