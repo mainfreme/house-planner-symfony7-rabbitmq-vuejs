@@ -6,14 +6,15 @@ class CsvRowProcessedEvent
 {
     public function __construct(
         private readonly float|int|string $id,
-        private readonly mixed   $fullName,
-        private readonly mixed   $email,
-        private readonly mixed  $name,
-        private readonly string  $filename,
-        private readonly int     $row,
-        private readonly ?string $error = null
+        private readonly mixed            $fullName,
+        private readonly mixed            $email,
+        private readonly mixed            $name,
+        private readonly string           $filename,
+        private readonly int              $row,
+        private readonly ?string          $error = null
     )
-    {}
+    {
+    }
 
     /**
      * @return mixed

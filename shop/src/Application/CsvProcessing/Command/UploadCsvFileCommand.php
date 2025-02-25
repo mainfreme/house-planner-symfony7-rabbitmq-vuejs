@@ -6,7 +6,8 @@ class UploadCsvFileCommand
 {
 
     public function __construct(private string $filename, private string $filePath)
-    {}
+    {
+    }
 
     public function getFilename(): string
     {

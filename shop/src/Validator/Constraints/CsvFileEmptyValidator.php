@@ -8,7 +8,6 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class CsvFileEmptyValidator extends ConstraintValidator
 {
-
     public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof CsvFileEmpty) {

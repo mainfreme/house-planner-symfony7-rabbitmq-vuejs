@@ -2,9 +2,9 @@
 
 namespace App\Validator\Constraints;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class CsvFileValidator extends ConstraintValidator
 {

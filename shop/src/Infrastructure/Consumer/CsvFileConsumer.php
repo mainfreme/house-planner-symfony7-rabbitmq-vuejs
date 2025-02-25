@@ -16,7 +16,9 @@ final class CsvFileConsumer
      */
     private static array $separators = [',', ';', '|', "\t"];
 
-    public function __construct(private LoggerInterface $logger, private EventDispatcher $eventDispatcher){}
+    public function __construct(private LoggerInterface $logger, private EventDispatcher $eventDispatcher)
+    {
+    }
 
     public function __invoke(CsvFileUploadedEvent $event): void
     {
