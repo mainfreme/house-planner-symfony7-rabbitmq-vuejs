@@ -8,4 +8,4 @@ framework:
                         name: csv_processing
                         type: direct
         routing:
-            'App\Application\CsvProcessing\Command\ProcessCsvFileCommand': async
+            'App\Domain\CsvProcessing\Event\CsvFileUploadedEvent': async
