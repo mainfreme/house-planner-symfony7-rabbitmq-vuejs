@@ -12,8 +12,7 @@ class CsvRowProcessedEvent
         private readonly string           $filename,
         private readonly int              $row,
         private readonly ?string          $error = null
-    )
-    {
+    ) {
     }
 
     /**

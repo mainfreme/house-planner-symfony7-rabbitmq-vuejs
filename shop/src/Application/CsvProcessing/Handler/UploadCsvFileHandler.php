@@ -8,7 +8,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class UploadCsvFileHandler
 {
-
     public function __construct(private MessageBusInterface $eventBus)
     {
     }
