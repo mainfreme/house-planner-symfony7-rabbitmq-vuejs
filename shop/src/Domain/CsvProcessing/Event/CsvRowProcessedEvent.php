@@ -5,6 +5,7 @@ namespace App\Domain\CsvProcessing\Event;
 class CsvRowProcessedEvent
 {
     public function __construct(
+        private readonly int              $totalRow,
         private readonly float|int|string $id,
         private readonly mixed            $fullName,
         private readonly mixed            $email,
@@ -77,5 +78,13 @@ class CsvRowProcessedEvent
     public function getData(): array
     {
         return [$this->id, $this->fullName, $this->email, $this->name];
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalRow(): int
+    {
+        return $this->totalRow;
     }
 }
