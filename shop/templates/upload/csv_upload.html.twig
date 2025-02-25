@@ -5,17 +5,16 @@
 {% block body %}
     <h2>Prześlij plik CSV</h2>
 
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger">{{ message }}</div>
-    {% endfor %}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
+    {{ form(form) }}
 
-    <form method="post" enctype="multipart/form-data">
-        <input type="file" name="csv_file" required>
-        <button type="submit">Prześlij</button>
-    </form>
+    <div>
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    </div>
 
     {% if processing_id is defined %}
         <h3>Status przetwarzania</h3>
