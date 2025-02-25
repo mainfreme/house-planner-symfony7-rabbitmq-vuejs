@@ -46,7 +46,7 @@ class FileUploadController extends AbstractController
                 }
 
                 try {
-                    $this->commandBus->dispatch(new UploadCsvFileCommand($newFilename));
+                    $this->commandBus->dispatch(new UploadCsvFileCommand($newFilename, $uploadDir));
 
                     $this->addFlash('success', 'Plik jest przetwarzany!');
                 } catch (\Exception $e) {
