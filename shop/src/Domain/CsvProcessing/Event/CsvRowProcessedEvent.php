@@ -5,11 +5,10 @@ namespace App\Domain\CsvProcessing\Event;
 class CsvRowProcessedEvent
 {
     public function __construct(
-        private readonly string  $id,
-        private readonly string  $firstName,
-        private readonly string  $lastName,
-        private readonly string  $email,
-        private readonly string  $name,
+        private readonly float|int|string $id,
+        private readonly mixed   $fullName,
+        private readonly mixed   $email,
+        private readonly mixed  $name,
         private readonly string  $filename,
         private readonly int     $row,
         private readonly ?string $error = null
@@ -17,41 +16,33 @@ class CsvRowProcessedEvent
     {}
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getEmail(): string
+    public function getEmail(): mixed
     {
         return $this->email;
     }
 
     /**
-     * @return string
+     * @return float|int|string
      */
-    public function getId(): string
+    public function getId(): float|int|string
     {
         return $this->id;
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getFirstName(): string
+    public function getFullName(): mixed
     {
-        return $this->firstName;
+        return $this->fullName;
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function getName(): mixed
     {
         return $this->name;
     }
@@ -81,10 +72,10 @@ class CsvRowProcessedEvent
     }
 
     /**
-     * @return array<int|string>
+     * @return array<int|mixed>
      */
     public function getData(): array
     {
-        return [$this->id, $this->firstName, $this->lastName, $this->email, $this->name];
+        return [$this->id, $this->fullName, $this->email, $this->name];
     }
 }

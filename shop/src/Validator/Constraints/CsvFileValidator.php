@@ -8,8 +8,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class CsvFileValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint): void
     {
+
+        if (!$constraint instanceof CsvFile) {
+            throw new \InvalidArgumentException('Nieprawidłowy typ Constraint');
+        }
         if (!$value instanceof UploadedFile) {
             return;
         }

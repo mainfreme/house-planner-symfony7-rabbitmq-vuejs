@@ -8,8 +8,13 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class CsvFileEmptyValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+
+    public function validate(mixed $value, Constraint $constraint): void
     {
+        if (!$constraint instanceof CsvFileEmpty) {
+            throw new \InvalidArgumentException('Nieprawidłowy typ Constraint');
+        }
+
         if (!$value instanceof UploadedFile) {
             return;
         }
