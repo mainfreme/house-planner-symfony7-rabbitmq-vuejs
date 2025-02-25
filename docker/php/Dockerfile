@@ -30,6 +30,8 @@ RUN git config --global user.email "bialonj@gmail.com"
 # Instalacja Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+
 # Instalacja Symfony CLI
 RUN wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
