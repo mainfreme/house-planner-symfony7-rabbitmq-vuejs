@@ -9,8 +9,9 @@ class CsvRowProcessedEvent
         private readonly mixed            $fullName,
         private readonly mixed            $email,
         private readonly mixed            $name,
-        private readonly string           $filename,
+        private readonly string           $uuid,
         private readonly int              $row,
+        private readonly int              $totalRow,
         private readonly ?string          $error = null
     ) {
     }
@@ -50,9 +51,9 @@ class CsvRowProcessedEvent
     /**
      * @return string
      */
-    public function getFilename(): string
+    public function getUuid(): string
     {
-        return $this->filename;
+        return $this->uuid;
     }
 
     /**
@@ -77,5 +78,13 @@ class CsvRowProcessedEvent
     public function getData(): array
     {
         return [$this->id, $this->fullName, $this->email, $this->name];
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalRow(): int
+    {
+        return $this->totalRow;
     }
 }

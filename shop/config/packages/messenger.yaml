@@ -1,11 +1,11 @@
 framework:
     messenger:
         transports:
-            async:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                options:
-                    exchange:
-                        name: csv_processing
-                        type: direct
+            async_row: '%env(MESSENGER_TRANSPORT_DSN)%'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
         routing:
-            'App\Domain\CsvProcessing\Event\CsvFileUploadedEvent': async
+
+            App\Application\CsvProcessing\Command\UploadCsvFileCommand: async
+            App\Domain\CsvProcessing\Event\CsvFileUploadedEvent: async
+            App\Infrastructure\Consumer\CsvFileConsumer: async
+            App\Domain\CsvProcessing\Event\CsvRowProcessedEvent: async_row
