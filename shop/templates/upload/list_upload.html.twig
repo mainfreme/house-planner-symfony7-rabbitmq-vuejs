@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Lista CSV {% endblock %}
+
+{% block body %}
+    <h2>Lista dla pliku {{ uuid }}</h2>
+
+    {% if data is not null %}
+        <h3>Podsumowanie zaimportowanych rekordów</h3>
+        <div id="status">
+            <p>Łączna liczba przetworzonych wierszy: <span id="total_rows">{{ data.csv|length }}</span></p>
+        </div>
+        <div>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Imię i Nazwisko</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for csv in data.csv %}
+                    <tr>
+                        <td>{{ csv.id }}</td>
+                        <td>{{ csv.name }}</td>
+                        <td>{{ csv.email }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">Brak danych</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+        </div>
+
+    {% endif %}
+
+
+
+{% endblock %}
