@@ -20,7 +20,11 @@ class StatusFileUploadController extends AbstractController
     #[Route('/summary/{uuid}', name: 'csv_summary', methods: ['GET'])]
     public function showSummary(string $uuid): Response
     {
-        $data = $this->cache->get('csv_' . $uuid, []);
+        $data = $this->cache->get('csv_' . $uuid, function ($item) {
+            $item->expiresAfter(3600);
+            return [];
+        });
+
         return $this->render('upload/list_upload.html.twig', [
             'uuid' => $uuid,
             'data' => $data
