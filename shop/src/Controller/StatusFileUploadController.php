@@ -21,7 +21,7 @@ class StatusFileUploadController extends AbstractController
     public function showSummary(string $uuid): Response
     {
         $data = $this->cache->get('csv_' . $uuid, []);
-        return $this->render('upload/csv_upload.html.twig', [
+        return $this->render('upload/list_upload.html.twig', [
             'uuid' => $uuid,
             'data' => $data
         ]);
