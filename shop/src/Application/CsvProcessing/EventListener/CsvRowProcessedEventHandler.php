@@ -23,14 +23,13 @@ class CsvRowProcessedEventHandler
     #[AsEventListener(event: CsvRowProcessedEvent::class)]
     public function onCsvRowProcessed(CsvRowProcessedEvent $event): void
     {
-        $cacheItem = $this->cache->getItem('csv_status_' . $event->getUuid());
-        $cacheItem->set([
-            'progress' => (int)(($event->getRow() / $event->getTotalRow()) * 100),
-            'status' => CsvFileUploadStatusEnum::PENDING,
-        ]);
-        $cacheItem->expiresAfter(3600);
-        $this->cache->save($cacheItem);
-
+        $this->cache->get('csv_status_' . $event->getUuid(), function ($item, $event) {
+            $item->expiresAfter(3600);
+            return [
+                'progress' => (int)(($event->getRow() / $event->getTotalRow()) * 100),
+                'status' => CsvFileUploadStatusEnum::PENDING,
+            ];
+        });
 
         $message = "Obsługa wiersza CSV z: {$event->getUuid()}, Linia: {$event->getRow()}";
         $this->logger->info($message);
@@ -41,10 +40,11 @@ class CsvRowProcessedEventHandler
         $session = $this->requestStack->getSession();
         $session->set("file_progress_{$event->getUuid()}", (int)(($event->getRow() / $event->getTotalRow()) * 100));
 
-        $cacheItem = $this->cache->getItem('csv_' . $event->getUuid());
-        $cacheItem->set(['csv' => $data]);
-        $cacheItem->expiresAfter(3600);
-        $this->cache->save($cacheItem);
+
+        $this->cache->get('csv_' . $event->getUuid(), function ($item, $data) {
+            $item->expiresAfter(3600);
+            return ['csv' => $data];
+        });
 
         $this->logger->info("Przetworzono linię {$event->getRow()}");
     }
