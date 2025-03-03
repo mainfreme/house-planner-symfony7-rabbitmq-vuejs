@@ -2,12 +2,13 @@
 
 namespace App\Infrastructure\Consumer;
 
+use App\Domain\CsvProcessing\Enum\CsvFileUploadStatusEnum;
 use App\Domain\CsvProcessing\Event\CsvFileUploadedEvent;
 use App\Domain\CsvProcessing\Event\CsvRowProcessedEvent;
-use http\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
 use SplFileObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 final class CsvFileConsumer
 {
@@ -16,7 +17,11 @@ final class CsvFileConsumer
      */
     private static array $separators = [',', ';', '|', "\t"];
 
-    public function __construct(private LoggerInterface $logger, private EventDispatcher $eventDispatcher)
+    public function __construct(
+        private LoggerInterface       $logger,
+        private EventDispatcher       $eventDispatcher,
+        private readonly RequestStack $requestStack,
+    )
     {
     }
 
@@ -24,6 +29,9 @@ final class CsvFileConsumer
     {
         $filename = $event->getFilename();
         $filePath = $event->getFilePath();
+
+        $session = $this->requestStack->getSession();
+        $session->set("file_status_{$event->getUuid()}", CsvFileUploadStatusEnum::PROCESSED);
 
         $this->logger->info("Rozpoczęto przetwarzanie pliku: {$filename}");
 
@@ -35,6 +43,9 @@ final class CsvFileConsumer
 
             $lineNumber = 0;
 
+            $fileToCountRow = clone $file;
+            $totalRow = $this->getTotalRow($fileToCountRow);
+
             foreach ($file as $row) {
                 $lineNumber++;
 
@@ -45,7 +56,7 @@ final class CsvFileConsumer
 
                 [$id, $fullName, $email, $name] = array_pad($row, 4, null);
 
-                // dodajmy walidacje maila
+                // @todo dodać walidacje maila
 
 
                 if (!is_numeric($id)) {
@@ -54,7 +65,7 @@ final class CsvFileConsumer
                 }
 
                 // Tworzymy event dla poprawnej linii
-                $csvRowEvent = new CsvRowProcessedEvent($id, $fullName, $email, $name, $filename, $lineNumber);
+                $csvRowEvent = new CsvRowProcessedEvent($id, $fullName, $email, $name, $event->getUuid(), $lineNumber, $totalRow);
                 $this->eventDispatcher->dispatch($csvRowEvent);
             }
 
@@ -65,7 +76,18 @@ final class CsvFileConsumer
         }
     }
 
-    public static function detectSeparator(string $filePath): string
+    /**
+     * @param SplFileObject $file
+     * @return int
+     */
+    private function getTotalRow(SplFileObject $file): int
+    {
+        $file->seek(PHP_INT_MAX); // Przeskakuje na ostatni wiersz
+
+        return $file->key() + 1;
+    }
+
+    private static function detectSeparator(string $filePath): string
     {
         $file = new SplFileObject($filePath, 'r');
         $file->setFlags(SplFileObject::READ_AHEAD | SplFileObject::SKIP_EMPTY);
@@ -75,7 +97,7 @@ final class CsvFileConsumer
         $dataLine = $file->current();
 
         if (!is_string($dataLine) || trim($dataLine) === '') {
-            throw new RuntimeException("Nie udało się odczytać drugiej linii pliku: {$filePath}");
+            throw new \Exception("Nie udało się odczytać drugiej linii pliku: {$filePath}");
         }
 
         // Zliczamy wystąpienia separatorów
@@ -90,7 +112,7 @@ final class CsvFileConsumer
 
         // Jeśli nie znaleziono żadnego separatora, zgłoś wyjątek
         if ($separatorCounts === []) {
-            throw new RuntimeException("Nie udało się wykryć separatora w pliku: {$filePath}");
+            throw new \Exception("Nie udało się wykryć separatora w pliku: {$filePath}");
         }
 
         // Znalezienie separatora z największą liczbą wystąpień
