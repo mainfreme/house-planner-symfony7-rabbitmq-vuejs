@@ -5,13 +5,13 @@ namespace App\Domain\CsvProcessing\Event;
 class CsvRowProcessedEvent
 {
     public function __construct(
-        private readonly int              $totalRow,
         private readonly float|int|string $id,
         private readonly mixed            $fullName,
         private readonly mixed            $email,
         private readonly mixed            $name,
-        private readonly string           $filename,
+        private readonly string           $uuid,
         private readonly int              $row,
+        private readonly int              $totalRow,
         private readonly ?string          $error = null
     ) {
     }
@@ -51,9 +51,9 @@ class CsvRowProcessedEvent
     /**
      * @return string
      */
-    public function getFilename(): string
+    public function getUuid(): string
     {
-        return $this->filename;
+        return $this->uuid;
     }
 
     /**
