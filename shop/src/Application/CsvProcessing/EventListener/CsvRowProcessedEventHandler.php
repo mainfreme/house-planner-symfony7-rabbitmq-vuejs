@@ -23,12 +23,13 @@ class CsvRowProcessedEventHandler
     #[AsEventListener(event: CsvRowProcessedEvent::class)]
     public function onCsvRowProcessed(CsvRowProcessedEvent $event): void
     {
-        $this->cache->get('csv_status_' . $event->getUuid(), function ($item, $event) {
+        $data = [
+            'progress' => (int)(($event->getRow() / $event->getTotalRow()) * 100),
+            'status' => CsvFileUploadStatusEnum::PENDING,
+        ];
+        $this->cache->get('csv_status_' . $event->getUuid(), function ($item, $data) {
             $item->expiresAfter(3600);
-            return [
-                'progress' => (int)(($event->getRow() / $event->getTotalRow()) * 100),
-                'status' => CsvFileUploadStatusEnum::PENDING,
-            ];
+            return $data;
         });
 
         $message = "Obsługa wiersza CSV z: {$event->getUuid()}, Linia: {$event->getRow()}";
@@ -38,7 +39,7 @@ class CsvRowProcessedEventHandler
 
         // Tutaj możemy zwalidować dane i zapisywać dane do bazy
         $session = $this->requestStack->getSession();
-        $session->set("file_progress_{$event->getUuid()}", (int)(($event->getRow() / $event->getTotalRow()) * 100));
+        $session->set("file_progress_{$event->getUuid()}", $data['progress']);
 
 
         $this->cache->get('csv_' . $event->getUuid(), function ($item, $data) {
