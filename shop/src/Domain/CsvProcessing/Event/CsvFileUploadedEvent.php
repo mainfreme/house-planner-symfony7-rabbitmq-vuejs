@@ -8,8 +8,7 @@ class CsvFileUploadedEvent
         private string $filename,
         private string $filePath,
         private string $uuid
-    )
-    {
+    ) {
     }
 
     /**

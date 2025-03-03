@@ -28,8 +28,7 @@ class FileUploadController extends AbstractController
         #[Autowire('%kernel.project_dir%')] private string $projectDir,
         private readonly RequestStack                      $requestStack,
         private readonly LoggerInterface                   $logger,
-    )
-    {
+    ) {
     }
 
     #[Route('/upload/{uuid?}', name: 'file_upload')]

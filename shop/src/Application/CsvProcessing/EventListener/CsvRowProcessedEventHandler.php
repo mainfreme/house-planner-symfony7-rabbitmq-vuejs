@@ -11,25 +11,23 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class CsvRowProcessedEventHandler
 {
-
     public function __construct(
         private readonly LoggerInterface $logger,
         private CacheInterface           $cache,
         private readonly RequestStack    $requestStack,
-    )
-    {
+    ) {
     }
 
     #[AsEventListener(event: CsvRowProcessedEvent::class)]
     public function onCsvRowProcessed(CsvRowProcessedEvent $event): void
     {
-        $data = [
+        $progressData = [
             'progress' => (int)(($event->getRow() / $event->getTotalRow()) * 100),
             'status' => CsvFileUploadStatusEnum::PENDING,
         ];
-        $this->cache->get('csv_status_' . $event->getUuid(), function ($item, $data) {
+        $this->cache->get('csv_status_' . $event->getUuid(), function ($item) use ($progressData) {
             $item->expiresAfter(3600);
-            return $data;
+            return $progressData;
         });
 
         $message = "Obsługa wiersza CSV z: {$event->getUuid()}, Linia: {$event->getRow()}";
@@ -39,10 +37,10 @@ class CsvRowProcessedEventHandler
 
         // Tutaj możemy zwalidować dane i zapisywać dane do bazy
         $session = $this->requestStack->getSession();
-        $session->set("file_progress_{$event->getUuid()}", $data['progress']);
+        $session->set("file_progress_{$event->getUuid()}", $progressData['progress']);
 
 
-        $this->cache->get('csv_' . $event->getUuid(), function ($item, $data) {
+        $this->cache->get('csv_' . $event->getUuid(), function ($item) use ($data) {
             $item->expiresAfter(3600);
             return ['csv' => $data];
         });

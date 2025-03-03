@@ -13,8 +13,7 @@ class StatusFileUploadController extends AbstractController
 {
     public function __construct(
         private CacheInterface $cache
-    )
-    {
+    ) {
     }
 
     #[Route('/summary/{uuid}', name: 'csv_summary', methods: ['GET'])]

@@ -8,8 +8,7 @@ class UploadCsvFileCommand
         private string $filename,
         private string $filePath,
         private string $uuid
-    )
-    {
+    ) {
     }
 
     /**

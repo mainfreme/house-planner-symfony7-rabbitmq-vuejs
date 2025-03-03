@@ -10,8 +10,7 @@ class UploadCsvFileHandler
 {
     public function __construct(
         private MessageBusInterface $eventBus
-    )
-    {
+    ) {
     }
 
     public function __invoke(UploadCsvFileCommand $command): void
