@@ -7,4 +7,5 @@ framework:
 
             App\Application\CsvProcessing\Command\UploadCsvFileCommand: async
             App\Domain\CsvProcessing\Event\CsvFileUploadedEvent: async
+            App\Infrastructure\Consumer\CsvFileConsumer: async§
             App\Domain\CsvProcessing\Event\CsvRowProcessedEvent: async_row

@@ -21,8 +21,7 @@ final class CsvFileConsumer
         private LoggerInterface       $logger,
         private EventDispatcher       $eventDispatcher,
         private readonly RequestStack $requestStack,
-    )
-    {
+    ) {
     }
 
     public function __invoke(CsvFileUploadedEvent $event): void
