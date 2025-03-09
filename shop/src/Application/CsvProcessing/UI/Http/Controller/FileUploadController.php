@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Application\CsvProcessing\UI\Http\Controller;
 
 use App\Application\CsvProcessing\Command\UploadCsvFileCommand;
 use App\Domain\CsvProcessing\Enum\CsvFileUploadStatusEnum;
@@ -21,6 +21,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+#[Route('/file/upload')]
 class FileUploadController extends AbstractController
 {
     public function __construct(
@@ -31,7 +32,7 @@ class FileUploadController extends AbstractController
     ) {
     }
 
-    #[Route('/upload/{uuid?}', name: 'file_upload')]
+    #[Route('/{uuid?}', name: 'file_upload')]
     public function upload(Request $request, ?string $uuid): Response
     {
         $form = $this->createUploadForm();
@@ -40,7 +41,7 @@ class FileUploadController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
-            $file = $form->get('csv_file')->getData();
+            $file = $form->get('file')->getData();
 
             $uuid = uniqid();
             $session = $this->requestStack->getSession();
@@ -75,7 +76,7 @@ class FileUploadController extends AbstractController
             ]);
         }
 
-        return $this->render('upload/csv_upload.html.twig', [
+        return $this->render('@file_processing/upload/upload.html.twig', [
             'form' => $form,
             'uuid' => $uuid ?? null
         ]);
@@ -85,8 +86,8 @@ class FileUploadController extends AbstractController
     private function createUploadForm(): FormInterface
     {
         return $this->createFormBuilder()
-            ->add('csv_file', FileType::class, [
-                'label' => 'Wybierz plik CSV',
+            ->add('file', FileType::class, [
+                'label' => 'Wybierz plik',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),

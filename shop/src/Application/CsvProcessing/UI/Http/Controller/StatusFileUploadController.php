@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 
+#[Route('/file')]
 class StatusFileUploadController extends AbstractController
 {
     public function __construct(
@@ -24,7 +25,7 @@ class StatusFileUploadController extends AbstractController
             return [];
         });
 
-        return $this->render('upload/list_upload.html.twig', [
+        return $this->render('@file_processing/upload/list_upload.html.twig', [
             'uuid' => $uuid,
             'data' => $data
         ]);
@@ -41,7 +42,7 @@ class StatusFileUploadController extends AbstractController
         ]);
     }
 
-    #[Route('/file/processed/{uuid}', name: 'file_processed', methods: ['GET'])]
+    #[Route('/processed/{uuid}', name: 'file_processed', methods: ['GET'])]
     public function processed(RequestStack $requestStack, string $uuid): JsonResponse
     {
         $session = $requestStack->getSession();

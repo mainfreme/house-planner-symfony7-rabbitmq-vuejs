@@ -1,0 +1,102 @@
+/* Stylizacja głównego menu */
+.menu {
+    background: #2c3e50;
+    padding: 10px 20px;
+}
+
+.menu-list {
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    width: 100%;
+}
+
+/* Podział na dwie sekcje */
+.left-menu {
+    display: flex;
+    gap: 20px;
+}
+
+.right-menu {
+    display: flex;
+    gap: 20px;
+    margin-left: auto; /* Wypycha do prawej strony */
+}
+
+/* Stylizacja elementów menu */
+.menu-item {
+    position: relative;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.menu-link:hover {
+    background: #34495e;
+    border-radius: 5px;
+}
+
+/* Ikony */
+.menu-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* Strzałka */
+.arrow {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+/* Stylizacja podmenu */
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #34495e;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 180px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.right-menu .submenu {
+    left: auto;
+    right: 0; /* Podmenu otworzy się z prawej strony */
+}
+
+.submenu li {
+    width: 100%;
+}
+
+.submenu-link {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #bdc3c7;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.submenu-link:hover {
+    background: #3b4b5c;
+}
+
+/* Pokazanie podmenu */
+.menu-item.open .submenu {
+    display: block;
+}

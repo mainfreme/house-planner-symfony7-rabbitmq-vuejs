@@ -1,0 +1,4 @@
+twig:
+    paths:
+        '%kernel.project_dir%/src/Application/CsvProcessing/UI/Twig': file_processing
+        '%kernel.project_dir%/src/Application/Menu/UI/Twig': menu_admin
