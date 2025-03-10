@@ -1,0 +1,90 @@
+{% set menuItems = [
+    {
+        'title' : 'Dashboard',
+        'icon' : 'https://img.icons8.com/ios-filled/50/dashboard.png',
+        'link' : '/dashboard',
+        'children' : []
+    },
+    {
+        'title' : 'Użytkownicy',
+        'icon' : 'https://img.icons8.com/ios-filled/50/user.png',
+        'link' : '#',
+        'children' : [
+            {'title' : 'Lista użytkowników', 'link' : '/users'},
+            {'title' : 'Dodaj użytkownika', 'link' : '/users/new'},
+        ]
+    },
+    {
+        'title' : 'Ustawienia',
+        'icon' : 'https://img.icons8.com/ios-filled/50/settings.png',
+        'link' : '#',
+        'children' : [
+            {'title' : 'Profil', 'link' : '/settings/profile'},
+            {'title' : 'Bezpieczeństwo', 'link' : '/settings/security'},
+        ]
+    }
+] %}
+
+
+
+<nav class="menu">
+    <ul class="menu-list">
+        <div class="left-menu">
+            {% for item in menuItems %}
+                {% if item.isGranted is not defined  %}
+                    <li class="menu-item {% if item.children is not empty %}has-children{% endif %}">
+                        <a href="{{ item.link }}" class="menu-link">
+                            <img src="{{ item.icon }}" alt="{{ item.title }}" class="menu-icon">
+                            <span>{{ item.title }}</span>
+                            {% if item.children is not empty %}
+                                <span class="arrow">▼</span>
+                            {% endif %}
+                        </a>
+                        {% if item.children is not empty %}
+                            <ul class="submenu">
+                                {% for child in item.children %}
+                                    <li>
+                                        <a href="{{ child.link }}" class="submenu-link">{{ child.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+
+    </ul>
+</nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuItems = document.querySelectorAll(".menu-item.has-children");
+
+        menuItems.forEach(item => {
+            const link = item.querySelector(".menu-link");
+
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                // Zamykamy wszystkie inne otwarte podmenu
+                menuItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove("open");
+                    }
+                });
+
+                // Toggling otwierania podmenu
+                item.classList.toggle("open");
+            });
+        });
+
+        // Zamknij podmenu, jeśli klikniemy poza menu
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".menu")) {
+                menuItems.forEach(item => item.classList.remove("open"));
+            }
+        });
+    });
+</script>
