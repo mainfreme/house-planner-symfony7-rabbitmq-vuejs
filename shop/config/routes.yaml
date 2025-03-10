@@ -5,3 +5,11 @@ file_processing_controllers:
 menu_admin_controllers:
     resource: ../src/Application/Menu/UI/Http/Controller/
     type: attribute
+
+documents_controllers:
+    resource: ../src/Application/Document/UI/Http/Controller/
+    type: attribute
+
+dashboard_controllers:
+    resource: ../src/Application/Dashboard/UI/Http/Controller/
+    type: attribute
