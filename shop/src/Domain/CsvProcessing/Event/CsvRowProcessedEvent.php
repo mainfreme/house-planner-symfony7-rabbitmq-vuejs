@@ -12,7 +12,7 @@ class CsvRowProcessedEvent
         private readonly string           $uuid,
         private readonly int              $row,
         private readonly int              $totalRow,
-        private readonly ?string          $error = null
+        private ?string                   $error = null
     ) {
     }
 
@@ -70,6 +70,14 @@ class CsvRowProcessedEvent
     public function getError(): ?string
     {
         return $this->error;
+    }
+
+    /**
+     * @param string|null $error
+     */
+    public function setError(?string $error): void
+    {
+        $this->error = $error;
     }
 
     /**

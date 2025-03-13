@@ -35,6 +35,14 @@ class CsvRowProcessedEventHandler
 
         $data = $event->getData();
 
+        $redisKey = "product_stock_{$event->getUuid()}";
+        $stock = $this->redis->decr($redisKey);
+        if ($stock < 0) {
+            $this->redis->incr($redisKey);
+            $event->setError('Brak dostępnych sztuk!');
+            $this->logger->info("Brak dostępnych sztuk! {$event->getRow()}");
+        }
+
         // Tutaj możemy zwalidować dane i zapisywać dane do bazy
         $session = $this->requestStack->getSession();
         $session->set("file_progress_{$event->getUuid()}", $progressData['progress']);
