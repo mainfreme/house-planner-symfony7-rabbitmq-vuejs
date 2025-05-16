@@ -3,9 +3,17 @@ framework:
         transports:
             async_row: '%env(MESSENGER_TRANSPORT_DSN)%'
             async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            async_stable:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: events
+                        type: topic
         routing:
 
             App\Application\CsvProcessing\Command\UploadCsvFileCommand: async
             App\Domain\CsvProcessing\Event\CsvFileUploadedEvent: async
             App\Infrastructure\Consumer\CsvFileConsumer: async
             App\Domain\CsvProcessing\Event\CsvRowProcessedEvent: async_row
+
+            App\Domain\Menu\Event\MenuRefreshScheduledEvent: async_stable

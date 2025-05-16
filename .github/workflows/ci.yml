@@ -23,8 +23,11 @@ jobs:
                   tools: composer, phpstan, php-cs-fixer
                   extensions: mbstring, xml, ctype, iconv, pdo_mysql
 
-            - name: Set temporary cache pool to filesystem
-              run: echo "CACHE_POOL=cache.adapter.filesystem" >> shop/.env.local
+            - name: Override cache.yaml for CI
+              run: |
+                  echo "framework:
+              cache:
+                  app: cache.adapter.filesystem" > shop/config/packages/cache.yaml
 
             - name: Install dependencies
               run: cd shop && composer install --prefer-dist

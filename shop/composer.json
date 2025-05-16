@@ -11,7 +11,7 @@
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-fixtures-bundle": "^4.0",
         "doctrine/doctrine-migrations-bundle": "^3.4",
-        "doctrine/migrations": "^3.8",
+        "doctrine/migrations": "^3.9",
         "doctrine/orm": "^3.3",
         "enqueue/amqp-ext": "^0.10.21",
         "league/csv": "^9.21",
@@ -28,9 +28,11 @@
         "symfony/mime": "7.2.*",
         "symfony/monolog-bundle": "^3.10",
         "symfony/runtime": "7.2.*",
+        "symfony/security-bundle": "7.2.*",
         "symfony/serializer": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
         "symfony/validator": "7.2.*",
+        "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "7.2.*",
         "twig/twig": "^3.20"
     },
@@ -87,6 +89,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.70",
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^12.0"
+        "phpunit/phpunit": "^12.0",
+        "symfony/maker-bundle": "^1.62",
+        "symfony/web-profiler-bundle": "7.2.*"
     }
 }

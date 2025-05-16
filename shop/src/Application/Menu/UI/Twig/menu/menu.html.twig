@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Menu  {% endblock %}
+
+{% block body %}
+    <nav class="menu">
+        <ul class="menu-list">
+            <div class="left-menu">
+                {% for item in menuItems %}
+                    {% if item.isGranted is not defined  %}
+                        <li class="menu-item {% if item.children is not empty %}has-children{% endif %}">
+                            <a href="{{ item.link }}" class="menu-link">
+                                <img src="{{ item.icon }}" alt="{{ item.title }}" class="menu-icon">
+                                <span>{{ item.title }}</span>
+                                {% if item.children is not empty %}
+                                    <span class="arrow">▼</span>
+                                {% endif %}
+                            </a>
+                            {% if item.children is not empty %}
+                                <ul class="submenu">
+                                    {% for child in item.children %}
+                                        <li>
+                                            <a href="{{ child.link }}" class="submenu-link">{{ child.title }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <div class="right-menu">
+                    {% for item in menuItems %}
+                        {% if item.isGranted is defined  %}
+                            <li class="menu-item {% if item.children is not empty %}has-children{% endif %}">
+                                <a href="{{ item.link }}" class="menu-link">
+                                    <img src="{{ item.icon }}" alt="{{ item.title }}" class="menu-icon">
+                                    <span>{{ item.title }}</span>
+                                    {% if item.children is not empty %}
+                                        <span class="arrow">▼</span>
+                                    {% endif %}
+                                </a>
+                                {% if item.children is not empty %}
+                                    <ul class="submenu">
+                                        {% for child in item.children %}
+                                            <li>
+                                                <a href="{{ child.link }}" class="submenu-link">{{ child.title }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuItems = document.querySelectorAll(".menu-item.has-children");
+
+            menuItems.forEach(item => {
+                const link = item.querySelector(".menu-link");
+
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+
+                    // Zamykamy wszystkie inne otwarte podmenu
+                    menuItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove("open");
+                        }
+                    });
+
+                    // Toggling otwierania podmenu
+                    item.classList.toggle("open");
+                });
+            });
+
+            // Zamknij podmenu, jeśli klikniemy poza menu
+            document.addEventListener("click", function (event) {
+                if (!event.target.closest(".menu")) {
+                    menuItems.forEach(item => item.classList.remove("open"));
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
