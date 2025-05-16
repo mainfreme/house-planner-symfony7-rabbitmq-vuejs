@@ -8,3 +8,21 @@
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
 import './styles/menu.css';
+import './styles/list.css';
+
+
+// import { createApp } from 'vue';
+// import App from './vue/App.vue';
+// import ProductTypeAdd from './components/AddProduct.vue';
+//
+// createApp(App).mount('#app');
+
+import { createApp } from 'vue';
+import App from './vue/App.vue';
+import router from './router'; // Import routera
+
+console.log(router.getRoutes());
+
+const app = createApp(App);
+app.use(router); // Użycie routera
+app.mount('#app');

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Dodaj nowy Typ produktu</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.link) }}
+    {{ form_row(form.is_public) }}
+    {{ form_row(form.save) }}
+    {{ form_end(form) }}
+{% endblock %}

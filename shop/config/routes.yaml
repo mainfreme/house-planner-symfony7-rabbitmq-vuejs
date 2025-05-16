@@ -13,3 +13,11 @@ documents_controllers:
 dashboard_controllers:
     resource: ../src/Application/Dashboard/UI/Http/Controller/
     type: attribute
+
+product_controllers:
+    resource: ../src/Application/Product/UI/Http/Controller/
+    type: attribute
+
+settings_controllers:
+    resource: ../src/Application/Settings/UI/Http/Controller/
+    type: attribute

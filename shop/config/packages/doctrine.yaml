@@ -24,8 +24,15 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+            Product:
+                is_bundle: false
+                type: attribute  # Użyj 'xml' lub 'annotation', jeśli nie korzystasz z PHP Attributes
+                dir: '%kernel.project_dir%/src/Domain/Product/Entity'
+                prefix: 'App\Domain\Product\Entity'
+                alias: Product
         controller_resolver:
             auto_mapping: false
+
 
 when@test:
     doctrine:

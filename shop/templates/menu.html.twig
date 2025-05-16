@@ -1,61 +1,44 @@
-{% set menuItems = [
-    {
-        'title' : 'Dashboard',
-        'icon' : 'https://img.icons8.com/ios-filled/50/dashboard.png',
-        'link' : '/dashboard',
-        'children' : []
-    },
-    {
-        'title' : 'Użytkownicy',
-        'icon' : 'https://img.icons8.com/ios-filled/50/user.png',
-        'link' : '#',
-        'children' : [
-            {'title' : 'Lista użytkowników', 'link' : '/users'},
-            {'title' : 'Dodaj użytkownika', 'link' : '/users/new'},
-        ]
-    },
-    {
-        'title' : 'Ustawienia',
-        'icon' : 'https://img.icons8.com/ios-filled/50/settings.png',
-        'link' : '#',
-        'children' : [
-            {'title' : 'Profil', 'link' : '/settings/profile'},
-            {'title' : 'Bezpieczeństwo', 'link' : '/settings/security'},
-        ]
-    }
-] %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Moja Strona</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-
-
-<nav class="menu">
-    <ul class="menu-list">
-        <div class="left-menu">
-            {% for item in menuItems %}
-                {% if item.isGranted is not defined  %}
-                    <li class="menu-item {% if item.children is not empty %}has-children{% endif %}">
-                        <a href="{{ item.link }}" class="menu-link">
-                            <img src="{{ item.icon }}" alt="{{ item.title }}" class="menu-icon">
-                            <span>{{ item.title }}</span>
-                            {% if item.children is not empty %}
-                                <span class="arrow">▼</span>
-                            {% endif %}
-                        </a>
-                        {% if item.children is not empty %}
-                            <ul class="submenu">
-                                {% for child in item.children %}
-                                    <li>
-                                        <a href="{{ child.link }}" class="submenu-link">{{ child.title }}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            {% if menuService.getMenuItems() is not empty %}
+                {% for item in menuService.getMenuItems() %}
+                    {#                {% if item.isGranted is not defined %} #}
+                    <ul class="navbar-nav ms-auto">
+                        {% if item.children is empty %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ item.link }}">{{ item.title }}</a>
+                            </li>
                         {% endif %}
-                    </li>
-                {% endif %}
-            {% endfor %}
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        {% if item.children is not empty %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    {{ item.title }}
+                                </a>
+
+                                <ul class="dropdown-menu" aria-labelledby="menuDropdown">
+                                    {% for child in item.children %}
+                                        <li><a class="dropdown-item" href="{{ child.link }}">{{ child.title }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    {#                {% endif %} #}
+                {% endfor %}
+            {% endif %}
         </div>
-
-
-    </ul>
+    </div>
 </nav>
 
 <script>
