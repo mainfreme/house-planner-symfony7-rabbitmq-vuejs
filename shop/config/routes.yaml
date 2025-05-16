@@ -21,3 +21,7 @@ product_controllers:
 settings_controllers:
     resource: ../src/Application/Settings/UI/Http/Controller/
     type: attribute
+
+wood_controllers:
+    resource: ../src/Application/WoodCalculate/UI/Http/Controller/
+    type: attribute
