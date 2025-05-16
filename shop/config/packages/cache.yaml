@@ -1,3 +1,6 @@
 framework:
     cache:
-        app: cache.adapter.redis
+        pools:
+            cache.redis:
+                adapter: cache.adapter.redis
+                provider: 'redis://redis:6379'

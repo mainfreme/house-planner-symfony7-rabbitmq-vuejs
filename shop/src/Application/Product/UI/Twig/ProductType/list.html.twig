@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lista typów produktów</h1>
+
+    <nav class="menu">
+        <a href="{{ path('product_type_add') }}">Dodaj nowy typ produktu</a>
+        <a href="#">Usuń wybrany</a>
+    </nav>
+    <div class="table">
+        <div class="row header">
+            <div class="cell">ID</div>
+            <div class="cell">Nazwa</div>
+            <div class="cell">Czy Używany</div>
+            <div class="cell">Czy publiczny</div>
+        </div>
+
+        {% for product in products %}
+            <div class="row">
+                <div class="cell">{{ product.id }}</div>
+                <div class="cell">{{ product.name }}</div>
+                <div class="cell">{{ product.isPublic ? 'Tak' : 'Nie' }}</div>
+            </div>
+        {% else %}
+            <div class="row no-data">
+                <div class="cell" colspan="3">Brak danych</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -20,6 +20,23 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    Redis:
+        class: Redis
+        calls:
+            - [ connect, [ 'redis', 6379 ] ]
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Infrastructure\Persistence\Doctrine\Product\ProductTypeRepository:
+        arguments:
+            $registry: '@doctrine'
+            $entityManager: '@doctrine.orm.entity_manager'
+
+    App\Application\Menu\Service\MenuService:
+        autowire: true
+        tags:
+            - { name: twig.global }
+
+    App\Infrastructure\Twig\MenuExtension:
+        arguments:
+            $menuService: '@App\Application\Menu\Service\MenuService'
+        tags:
+            - { name: 'twig.extension', priority: -10 }

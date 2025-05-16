@@ -72,7 +72,7 @@ services:
     redis:
         image: redis:latest
         container_name: symfony_redis
-        restart: unless-stopped
+        restart: always
         ports:
             - "6379:6379"
         volumes:

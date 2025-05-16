@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Lista produktów</h1>
+
+    <nav class="menu">
+        <a href="{{ path('product_type_add') }}">Dodaj nowy typ produktu</a>
+        <a href="#">Usuń wybrany</a>
+    </nav>
+
+    {% include '@product/product/list/menu.html.twig' %}
+
+    {% include '@product/product/search.html.twig' %}
+
+    {% include '@product/product/list/table.html.twig' with {'products': products} %}
+
+{% endblock %}

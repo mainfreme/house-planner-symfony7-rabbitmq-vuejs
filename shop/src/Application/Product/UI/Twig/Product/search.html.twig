@@ -1,0 +1,19 @@
+<section id="search_product">
+    <div>
+        {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.type) }}
+        {{ form_row(form.price_min) }}
+        {{ form_row(form.price_max) }}
+        {{ form_row(form.is_active) }}
+
+        {{ form_end(form) }}
+
+        <ul>
+            {% for product in products %}
+                <li>{{ product.name }} - {{ product.price }}€</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</section>

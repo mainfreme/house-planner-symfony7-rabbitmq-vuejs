@@ -1,5 +1,23 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+file_processing_controllers:
+    resource: ../src/Application/CsvProcessing/UI/Http/Controller/
+    type: attribute
+
+menu_admin_controllers:
+    resource: ../src/Application/Menu/UI/Http/Controller/
+    type: attribute
+
+documents_controllers:
+    resource: ../src/Application/Document/UI/Http/Controller/
+    type: attribute
+
+dashboard_controllers:
+    resource: ../src/Application/Dashboard/UI/Http/Controller/
+    type: attribute
+
+product_controllers:
+    resource: ../src/Application/Product/UI/Http/Controller/
+    type: attribute
+
+settings_controllers:
+    resource: ../src/Application/Settings/UI/Http/Controller/
     type: attribute

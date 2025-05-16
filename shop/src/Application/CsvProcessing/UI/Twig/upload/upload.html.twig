@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Przesyłanie pliku CSV {% endblock %}
+
+{% block body %}
+    <h2>Prześlij plik CSV</h2>
+
+    {{ form(form) }}
+
+    <div>
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    </div>
+    <div>
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% if uuid is not null %}
+{#        {{ dump(uuid) }}#}
+    <div>
+        <p id="statusText">Oczekiwanie...</p>
+    </div>
+
+    <script>
+        async function updateProgress() {
+            const response = await fetch('/status/{{ uuid }}');
+            const data = await response.json();
+
+            document.getElementById("statusText").innerText = data.status;
+
+            if ((data.status).length === 0) {
+                document.getElementById("statusText").innerText = 'Oczekiwanie...';
+            }
+
+            if (data.status !== 'copied') {
+                setTimeout(updateProgress, 1000);
+            }
+
+        }
+        updateProgress();
+    </script>
+    {% endif %}
+
+{% endblock %}
