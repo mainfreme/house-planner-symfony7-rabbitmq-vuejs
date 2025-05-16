@@ -18,8 +18,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ApiProductController extends AbstractController
 {
     public function __construct(
-        private readonly ProductTypeService $productTypeService,
-        private ProductTypeValidator $productTypeValidator,
+        private readonly ProductTypeService   $productTypeService,
+        private readonly ProductTypeValidator $productTypeValidator,
     ) {
     }
 
