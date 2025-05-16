@@ -1,3 +1,4 @@
 framework:
     cache:
-        app: '%env(CACHE_POOL)%'
+        default_redis_provider: '%env(REDIS_URL)%'
+        app: '%env(resolve:CACHE_POOL)%'
