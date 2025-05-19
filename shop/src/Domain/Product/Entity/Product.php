@@ -2,7 +2,7 @@
 
 namespace App\Domain\Product\Entity;
 
-use App\Infrastructure\Persistence\Doctrine\ProductRepository;
+use App\Infrastructure\Persistence\Doctrine\Product\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
