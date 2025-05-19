@@ -1,87 +1,98 @@
 <template>
-  <div ref="productContainer" class="product-card">
-    <div v-if="!isVisible">Ładowanie...</div>
-    <img v-if="isVisible && image" :src="image" alt="Produkt" class="product-image" />
-    <div v-if="isVisible && details">
-      <h2>{{ details.name }}</h2>
-      <p>{{ details.description }}</p>
-      <p><strong>{{ details.price }} PLN</strong></p>
-    </div>
-    <div v-if="isVisible && availability !== null">
-      <p :class="{'available': availability, 'unavailable': !availability}">
-        {{ availability ? 'Dostępny' : 'Brak w magazynie' }}
-      </p>
+  <div class="max-w-3xl mx-auto p-4">
+    <!-- Loader -->
+    <Loader v-if="loading" />
+
+    <!-- Zawartość po załadowaniu -->
+    <div v-else>
+      <div v-if="products.length === 0" class="text-gray-600 text-center p-4">
+        Brak produktów.
+      </div>
+
+      <ul>
+        <li
+            v-for="product in products"
+            :key="product.id"
+            class="p-4 border-b border-gray-200 flex justify-between"
+        >
+          <span>{{ product.name }}</span>
+          <span class="font-semibold">{{ product.price }} zł</span>
+        </li>
+      </ul>
+
+      <!-- Paginacja -->
+      <div class="flex justify-center items-center mt-6 space-x-4">
+        <button
+            :disabled="page === 1"
+            @click="changePage(page - 1)"
+            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Poprzednia
+        </button>
+
+        <span class="text-gray-700 font-medium">
+          Strona {{ page }} z {{ totalPages }}
+        </span>
+
+        <button
+            :disabled="page === totalPages"
+            @click="changePage(page + 1)"
+            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Następna
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Loader from '@/component/Loader.vue';
+
 export default {
-  name: "product_list",
-  props: {
-    productId: {
-      type: String,
-      required: true
-    }
+  name: 'ProductList',
+  components: {
+    Loader,
   },
   data() {
     return {
-      isVisible: false,
-      image: null,
-      details: null,
-      availability: null
+      products: [],
+      page: 1,
+      totalPages: 1,
+      loading: false,
     };
   },
   mounted() {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        this.isVisible = true;
-        this.loadProductData();
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-
-    observer.observe(this.$refs.productContainer);
+    this.loadProducts();
   },
   methods: {
-    async loadProductData() {
+    async loadProducts() {
+      this.loading = true;
       try {
-        const [imageResponse, detailsResponse, availabilityResponse] = await Promise.all([
-          fetch(`https://api.example.com/product-image/${this.productId}`).then(res => res.json()),
-          fetch(`https://api.example.com/product-details/${this.productId}`).then(res => res.json()),
-          fetch(`https://api.example.com/product-availability/${this.productId}`).then(res => res.json())
-        ]);
+        const response = await fetch(`/api/product/list?page=${this.page}`);
+        if (!response.ok) throw new Error('Błąd serwera');
+        const data = await response.json();
 
-        this.image = imageResponse.url;
-        this.details = detailsResponse;
-        this.availability = availabilityResponse.available;
+        this.products = data.items;
+        this.totalPages = data.total_pages;
       } catch (error) {
-        console.error('Błąd ładowania danych produktu:', error);
+        console.error('Błąd ładowania produktów:', error);
+        this.products = [];
+        this.totalPages = 1;
+      } finally {
+        this.loading = false;
       }
-    }
-  }
+    },
+    changePage(newPage) {
+      if (newPage >= 1 && newPage <= this.totalPages) {
+        this.page = newPage;
+        this.loadProducts();
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.product-card {
-  border: 1px solid #ddd;
-  padding: 16px;
-  margin: 16px;
-  text-align: center;
-  max-width: 300px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-}
-.product-image {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 8px;
-}
-.available {
-  color: green;
-}
-.unavailable {
-  color: red;
-}
+/* Możesz dodać własne style lub korzystać z Tailwind */
 </style>
-

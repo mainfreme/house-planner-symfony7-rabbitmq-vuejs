@@ -18,6 +18,10 @@ product_controllers:
     resource: ../src/Application/Product/UI/Http/Controller/
     type: attribute
 
+api_product_controllers:
+    resource: ../src/Application/Product/UI/Http/Controller/Api/
+    type: attribute
+
 settings_controllers:
     resource: ../src/Application/Settings/UI/Http/Controller/
     type: attribute

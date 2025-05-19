@@ -17,12 +17,16 @@ import './styles/list.css';
 //
 // createApp(App).mount('#app');
 
+
+import GlobalLoader from './plugins/global-loader'
+
 import { createApp } from 'vue';
 import App from './vue/App.vue';
-import router from './router'; // Import routera
-
-console.log(router.getRoutes());
+import router from './vue/router'; // Import routera
 
 const app = createApp(App);
-app.use(router); // Użycie routera
+// app.component('WoodenHouseLoader', WoodenHouseLoader)
+app.use(router);
+
+app.use(GlobalLoader)
 app.mount('#app');
