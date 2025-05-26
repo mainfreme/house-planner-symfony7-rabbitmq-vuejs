@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250525190608 extends AbstractMigration
+final class Version20250525190800 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -46,6 +46,15 @@ final class Version20250525190608 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             COMMENT ON COLUMN history.modify_at IS '(DC2Type:datetime_immutable)'
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE image (id SERIAL NOT NULL, product_id INT NOT NULL, data TEXT NOT NULL, property JSON NOT NULL, is_delete BOOLEAN NOT NULL, is_active BOOLEAN DEFAULT NULL, uuid UUID NOT NULL, PRIMARY KEY(id))
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE INDEX IDX_C53D045F4584665A ON image (product_id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            COMMENT ON COLUMN image.uuid IS '(DC2Type:uuid)'
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE product (id SERIAL NOT NULL, type_id INT NOT NULL, name VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, price VARCHAR(255) NOT NULL, is_active BOOLEAN NOT NULL, parameters JSON NOT NULL, uuid UUID NOT NULL, PRIMARY KEY(id))
@@ -84,6 +93,9 @@ final class Version20250525190608 extends AbstractMigration
             ALTER TABLE file ADD CONSTRAINT FK_8C9F36104584665A FOREIGN KEY (product_id) REFERENCES product (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE image ADD CONSTRAINT FK_C53D045F4584665A FOREIGN KEY (product_id) REFERENCES product (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE product ADD CONSTRAINT FK_D34A04ADC54C8C93 FOREIGN KEY (type_id) REFERENCES product_type (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
         $this->addSql(<<<'SQL'
@@ -107,6 +119,9 @@ final class Version20250525190608 extends AbstractMigration
             ALTER TABLE file DROP CONSTRAINT FK_8C9F36104584665A
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE image DROP CONSTRAINT FK_C53D045F4584665A
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE product DROP CONSTRAINT FK_D34A04ADC54C8C93
         SQL);
         $this->addSql(<<<'SQL'
@@ -126,6 +141,9 @@ final class Version20250525190608 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE history
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE image
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE product
