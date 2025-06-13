@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Client\UI\Http\Controller;
+namespace App\Application\Client\UI\Http\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,5 +20,5 @@ class ApiClientController extends AbstractController
         $customers = $query->execute();
         return $this->json($customers);
     }
-    
+
 }

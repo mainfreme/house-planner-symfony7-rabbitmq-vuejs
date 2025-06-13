@@ -45,6 +45,6 @@ services:
     Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
 
 
-    App\Infrastructure\User\MessageHandler\UserLoggedInEventHandler:
-        arguments:
-            $microserviceUrl: '%microservice.ci4_url%'
+#    App\Infrastructure\User\MessageHandler\UserLoggedInEventHandler:
+#        arguments:
+#            $microserviceUrl: '%microservice.ci4_url%'
