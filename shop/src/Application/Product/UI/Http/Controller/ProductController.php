@@ -22,14 +22,14 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{name}', name: 'product_search', defaults: ['name' => null])]
-    public function search(Request $request, ProductRepository $productRepository, string $name): Response
+    public function search(Request $request, ProductRepository $productRepository, ?string $name): Response
     {
         $form = $this->createForm(ProductSearchType::class);
         $form->handleRequest($request);
 
         $criteria = $form->getData();
         if (empty($criteria)) {
-            $criteria = ['is_active' => 'true','type'=>$name];
+            $criteria = ['is_active' => 'true','type'=>($name?'':$name)];
         }
         $products = $productRepository->findByCriteria($criteria);
 
