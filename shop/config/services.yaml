@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     upload_directory: '%kernel.project_dir%/var/uploads'
+    microservice.ci4_url: '%env(resolve:MICROSERVICE_CI4_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -40,3 +41,10 @@ services:
             $menuService: '@App\Application\Menu\Service\MenuService'
         tags:
             - { name: 'twig.extension', priority: -10 }
+
+    Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
+
+
+#    App\Infrastructure\User\MessageHandler\UserLoggedInEventHandler:
+#        arguments:
+#            $microserviceUrl: '%microservice.ci4_url%'
