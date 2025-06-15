@@ -5,6 +5,7 @@ namespace App\Domain\Product\Entity;
 use App\Infrastructure\Persistence\Doctrine\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: "product")]
@@ -34,6 +35,9 @@ class Product
 
     #[ORM\Column]
     private array $parameters = [];
+
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $uuid;
 
     public function getId(): ?int
     {
@@ -116,6 +120,24 @@ class Product
     {
         $this->parameters = $parameters;
 
+        return $this;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getUuid(): Uuid
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @param Uuid $uuid
+     * @return $this
+     */
+    public function setUuid(Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
         return $this;
     }
 }

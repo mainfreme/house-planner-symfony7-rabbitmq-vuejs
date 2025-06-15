@@ -2,6 +2,7 @@
 
 namespace App\Domain\Template\Entity;
 
+use App\Domain\File\Entity\File;
 use App\Domain\Template\Enum\TemplateEnum;
 use App\Repository\TemplateRepository;
 use Doctrine\DBAL\Types\Types;
