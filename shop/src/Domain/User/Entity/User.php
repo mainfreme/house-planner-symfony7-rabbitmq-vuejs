@@ -2,7 +2,7 @@
 
 namespace App\Domain\User\Entity;
 
-use App\Infrastructure\Persistence\Doctrine\Client\UserRepository;
+use App\Infrastructure\Persistence\Doctrine\User\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -10,11 +10,12 @@ use App\Domain\User\Enum\RoleEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: "users")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -23,7 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\Column]
+    #[ORM\Column(type: "string")]
     private string $password;
 
     #[Assert\NotBlank(groups: ['registration'])]
