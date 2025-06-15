@@ -2,7 +2,8 @@
 
 namespace App\Infrastructure\Persistence\Doctrine\Client;
 
-use App\Entity\ClientAddress;
+
+use App\Domain\Client\Entity\ClientAddress;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

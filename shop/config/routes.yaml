@@ -1,3 +1,7 @@
+api_login_check:
+    path: /api/login_check
+    methods: [POST]
+
 file_processing_controllers:
     resource: ../src/Application/CsvProcessing/UI/Http/Controller/
     type: attribute
@@ -22,9 +26,6 @@ settings_controllers:
     resource: ../src/Application/Settings/UI/Http/Controller/
     type: attribute
 
-api_login_check:
-    path: /api/login
-
 user_controllers:
     resource: ../src/Application/User/UI/Http/Controller/
     type: attribute
@@ -40,3 +41,4 @@ client_controllers:
 api_client_controllers:
     resource: ../src/Application/Client/UI/Http/Controller/Api/
     type: attribute
+

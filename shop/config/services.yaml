@@ -42,6 +42,10 @@ services:
         tags:
             - { name: 'twig.extension', priority: -10 }
 
+    App\Infrastructure\Persistence\Doctrine\User\UserRepository:
+        tags: ['doctrine.repository_service']
+        arguments:
+            - '@doctrine' # lub '@Doctrine\Persistence\ManagerRegistry'
     Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
 
 
