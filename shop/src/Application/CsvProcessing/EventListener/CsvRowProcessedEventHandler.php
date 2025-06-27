@@ -7,15 +7,15 @@ use App\Domain\CsvProcessing\Event\CsvRowProcessedEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class CsvRowProcessedEventHandler
 {
     public function __construct(
         private readonly LoggerInterface $logger,
-        private CacheInterface           $cache,
+        private readonly \Redis          $redis,
         private readonly RequestStack    $requestStack,
-    ) {
+    )
+    {
     }
 
     #[AsEventListener(event: CsvRowProcessedEvent::class)]
@@ -25,7 +25,7 @@ class CsvRowProcessedEventHandler
             'progress' => (int)(($event->getRow() / $event->getTotalRow()) * 100),
             'status' => CsvFileUploadStatusEnum::PENDING,
         ];
-        $this->cache->get('csv_status_' . $event->getUuid(), function ($item) use ($progressData) {
+        $this->redis->get('csv_status_' . $event->getUuid(), function ($item) use ($progressData) {
             $item->expiresAfter(3600);
             return $progressData;
         });
@@ -48,7 +48,7 @@ class CsvRowProcessedEventHandler
         $session->set("file_progress_{$event->getUuid()}", $progressData['progress']);
 
 
-        $this->cache->get('csv_' . $event->getUuid(), function ($item) use ($data) {
+        $this->redis->get('csv_' . $event->getUuid(), function ($item) use ($data) {
             $item->expiresAfter(3600);
             return ['csv' => $data];
         });

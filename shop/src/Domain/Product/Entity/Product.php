@@ -5,6 +5,7 @@ namespace App\Domain\Product\Entity;
 use App\Infrastructure\Persistence\Doctrine\Product\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: "product")]
@@ -34,6 +35,9 @@ class Product
 
     #[ORM\Column]
     private array $parameters = [];
+
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private UuidInterface $uuid;
 
     public function getId(): ?int
     {
@@ -95,18 +99,28 @@ class Product
         return $this;
     }
 
-    public function isActive(): ?bool
+    /**
+     * @return bool|null
+     */
+    public function getIsActive(): ?bool
     {
         return $this->is_active;
     }
 
-    public function setIsActive(bool $is_active): static
+    /**
+     * @param bool|null $is_active
+     * @return $this
+     */
+    public function setIsActive(?bool $is_active): static
     {
         $this->is_active = $is_active;
 
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getParameters(): array
     {
         return $this->parameters;
@@ -116,6 +130,24 @@ class Product
     {
         $this->parameters = $parameters;
 
+        return $this;
+    }
+
+    /**
+     * @return UuidInterface
+     */
+    public function getUuid(): UuidInterface
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @param UuidInterface $uuid
+     * @return $this
+     */
+    public function setUuid(UuidInterface $uuid): static
+    {
+        $this->uuid = $uuid;
         return $this;
     }
 }

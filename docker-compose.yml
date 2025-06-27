@@ -80,7 +80,41 @@ services:
         networks:
             - symfony_network
 
+#    microservice - START
+    microservice_ci4:
+        build:
+            context: .
+            dockerfile: ./docker/codeigniter/Dockerfile
+        container_name: ci4_microservice
+        restart: unless-stopped
+        working_dir: /var/www/html
+        volumes:
+            - ./microservice-ci4:/var/www/html
+        environment:
+            - CI_ENVIRONMENT=development
+            - MONGO_URI=mongodb://mongo:27017
+            - RABBITMQ_DSN=amqp://guest:guest@rabbitmq:5672/
+        depends_on:
+            - mongo
+            - rabbitmq
+        networks:
+            - symfony_network
+
+    mongo:
+        image: mongo:latest
+        container_name: symfony_mongo
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo_data:/data/db
+        networks:
+            - symfony_network
+
+#    microservice - END
+
 volumes:
     db_data:
     rabbitmq_data:
     redis_data:
+    mongo_data:

@@ -15,7 +15,9 @@
         "doctrine/orm": "^3.3",
         "enqueue/amqp-ext": "^0.10.21",
         "league/csv": "^9.21",
+        "lexik/jwt-authentication-bundle": "^3.1",
         "predis/predis": "^2.3",
+        "ramsey/uuid-doctrine": "^2.1",
         "symfony/amqp-messenger": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
@@ -23,6 +25,7 @@
         "symfony/flex": "^2",
         "symfony/form": "7.2.*",
         "symfony/framework-bundle": "7.2.*",
+        "symfony/http-client": "7.2.*",
         "symfony/http-foundation": "7.2.*",
         "symfony/messenger": "7.2.*",
         "symfony/mime": "7.2.*",
@@ -75,7 +78,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "rector": "vendor/bin/rector process"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -90,6 +94,7 @@
         "friendsofphp/php-cs-fixer": "^3.70",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^12.0",
+        "rector/rector": "^2.0",
         "symfony/maker-bundle": "^1.62",
         "symfony/web-profiler-bundle": "7.2.*"
     }

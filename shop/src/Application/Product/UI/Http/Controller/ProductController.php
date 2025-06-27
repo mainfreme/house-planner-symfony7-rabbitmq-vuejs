@@ -39,7 +39,7 @@ class ProductController extends AbstractController
 
         $criteria = $form->getData();
         if (empty($criteria)) {
-            $criteria = ['is_active' => 'true', 'type' => $name];
+            $criteria = ['is_active' => 'true','type'=>($name?'':$name)];
         }
 //        $products = $productRepository->findByCriteria($criteria);
 

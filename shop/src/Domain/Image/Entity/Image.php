@@ -2,11 +2,14 @@
 
 namespace App\Domain\Image\Entity;
 
-use App\Domain\Image\Repository\ImageRepository;
+use App\Domain\Product\Entity\Product;
+use App\Infrastructure\Persistence\Doctrine\Image\ImageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ORM\Table(name: "image")]
 class Image
 {
     #[ORM\Id]
@@ -25,6 +28,16 @@ class Image
 
     #[ORM\Column(nullable: true)]
     private ?bool $is_active = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
+
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $uuid = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $is_main = null;
 
     public function getId(): ?int
     {
@@ -77,5 +90,45 @@ class Image
         $this->is_active = $is_active;
 
         return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): static
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsMain(): ?bool
+    {
+        return $this->is_main;
+    }
+
+    /**
+     * @param bool|null $is_main
+     */
+    public function setIsMain(?bool $is_main): void
+    {
+        $this->is_main = $is_main;
     }
 }

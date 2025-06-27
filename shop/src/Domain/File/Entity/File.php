@@ -3,9 +3,12 @@
 namespace App\Domain\File\Entity;
 
 use App\Domain\File\Enum\FileEnum;
+
+use App\Domain\Product\Entity\Product;
 use App\Repository\FileRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 class File
@@ -25,109 +28,145 @@ class File
     private ?int $related_id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $path = null;
-
-    #[ORM\Column(type: Types::BIGINT)]
-    private ?string $size_bytes = null;
+    private ?string $data = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private array $property = [];
 
     #[ORM\Column]
-    private ?int $owner = null;
+    private ?bool $is_delete = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $is_active = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
+
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $uuid = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
+    /**
+     * @return string|null
+     */
     public function getFileName(): ?string
     {
         return $this->file_name;
     }
 
-    public function setFileName(string $file_name): static
+    /**
+     * @param string|null $file_name
+     */
+    public function setFileName(?string $file_name): void
     {
         $this->file_name = $file_name;
-
-        return $this;
     }
 
+    /**
+     * @return FileEnum|null
+     */
     public function getFileType(): ?FileEnum
     {
         return $this->file_type;
     }
 
-    public function setFileType(FileEnum $file_type): static
+    /**
+     * @param FileEnum|null $file_type
+     */
+    public function setFileType(?FileEnum $file_type): void
     {
         $this->file_type = $file_type;
-
-        return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getRelatedId(): ?int
     {
         return $this->related_id;
     }
 
-    public function setRelatedId(?int $related_id): static
+    /**
+     * @param int|null $related_id
+     */
+    public function setRelatedId(?int $related_id): void
     {
         $this->related_id = $related_id;
+    }
+
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    public function setData(string $data): static
+    {
+        $this->data = $data;
 
         return $this;
     }
 
-    public function getPath(): ?string
+    public function getProperty(): array
     {
-        return $this->path;
+        return $this->property;
     }
 
-    public function setPath(string $path): static
+    public function setProperty(array $property): static
     {
-        $this->path = $path;
+        $this->property = $property;
 
         return $this;
     }
 
-    public function getSizeBytes(): ?string
+    public function isDelete(): ?bool
     {
-        return $this->size_bytes;
+        return $this->is_delete;
     }
 
-    public function setSizeBytes(string $size_bytes): static
+    public function setIsDelete(bool $is_delete): static
     {
-        $this->size_bytes = $size_bytes;
+        $this->is_delete = $is_delete;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function isActive(): ?bool
     {
-        return $this->created_at;
+        return $this->is_active;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setIsActive(?bool $is_active): static
     {
-        $this->created_at = $created_at;
+        $this->is_active = $is_active;
 
         return $this;
     }
 
-    public function getOwner(): ?int
+    public function getProduct(): ?Product
     {
-        return $this->owner;
+        return $this->product;
     }
 
-    public function setOwner(int $owner): static
+    public function setProduct(?Product $product): static
     {
-        $this->owner = $owner;
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

@@ -81,7 +81,7 @@ final class CsvFileConsumer
      */
     private function getTotalRow(SplFileObject $file): int
     {
-        $file->seek(PHP_INT_MAX); // Przeskakuje na ostatni wiersz
+        $file->seek(PHP_INT_MAX);
 
         return $file->key() + 1;
     }

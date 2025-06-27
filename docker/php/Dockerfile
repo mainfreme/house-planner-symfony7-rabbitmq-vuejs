@@ -33,8 +33,8 @@ RUN apt-get install -y postgresql-client nodejs
 RUN pecl install redis && docker-php-ext-enable redis
 
 # Konfiguracja Git (zamień na swoje dane)
-RUN git config --global user.name "Jakub Białoń"
-RUN git config --global user.email "bialonj@gmail.com"
+RUN #git config --global user.name "Jakub Białoń"
+RUN #git config --global user.email "bialonj@gmail.com"
 
 # Instalacja Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
