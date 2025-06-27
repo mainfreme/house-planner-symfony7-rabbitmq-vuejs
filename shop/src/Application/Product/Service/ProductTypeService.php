@@ -29,4 +29,9 @@ class ProductTypeService
 
         return true;
     }
+
+    public function getList()
+    {
+
+    }
 }

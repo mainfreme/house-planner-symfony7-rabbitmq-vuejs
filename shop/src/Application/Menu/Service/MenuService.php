@@ -35,20 +35,23 @@ class MenuService
      */
     public function getMenuItems(): array
     {
+        $generateMenu = $this->generateMenu();
+
         if (!$this->cached) {
-            return $this->generateMenu();
+            return $generateMenu;
         }
 
         try {
-            $menu = $this->cache->get(self::CACHE_KEY);
+            $menu = unserialize($this->cache->get(self::CACHE_KEY));
 
             if (!$menu) {
-                $this->setCache($this->generateMenu());
+                $this->setCache($generateMenu);
+                $menu = $generateMenu;
             }
 
-            return unserialize($menu);
+            return $menu;
         } catch (\Psr\Cache\CacheException | \RedisException $e) {
-            return $this->generateMenu();
+            return $generateMenu;
         }
     }
 

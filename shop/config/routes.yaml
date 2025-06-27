@@ -22,8 +22,17 @@ product_controllers:
     resource: ../src/Application/Product/UI/Http/Controller/
     type: attribute
 
+api_product_controllers:
+    resource: ../src/Application/Product/UI/Http/Controller/Api/
+    type: attribute
+
 settings_controllers:
     resource: ../src/Application/Settings/UI/Http/Controller/
+    type: attribute
+
+
+wood_controllers:
+    resource: ../src/Application/WoodCalculate/UI/Http/Controller/
     type: attribute
 
 user_controllers:
@@ -41,4 +50,3 @@ client_controllers:
 api_client_controllers:
     resource: ../src/Application/Client/UI/Http/Controller/Api/
     type: attribute
-

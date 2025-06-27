@@ -21,6 +21,16 @@ class ProductController extends AbstractController
     {
     }
 
+    #[Route('/list', name: 'product_list')]
+    public function index(): Response
+    {
+
+
+        return $this->render('@product/product/list.html.twig', [
+
+        ]);
+    }
+
     #[Route('/{name}', name: 'product_search', defaults: ['name' => null])]
     public function search(Request $request, ProductRepository $productRepository, ?string $name): Response
     {
@@ -31,11 +41,12 @@ class ProductController extends AbstractController
         if (empty($criteria)) {
             $criteria = ['is_active' => 'true','type'=>($name?'':$name)];
         }
-        $products = $productRepository->findByCriteria($criteria);
+//        $products = $productRepository->findByCriteria($criteria);
 
         return $this->render('@product/product/list.html.twig', [
             'form' => $form->createView(),
-            'products' => $products,
+            '$criteria' => $criteria,
+//            'products' => $products,
         ]);
     }
 
@@ -68,6 +79,5 @@ class ProductController extends AbstractController
             'products' => $products,
         ]);
     }
-
 }
 
