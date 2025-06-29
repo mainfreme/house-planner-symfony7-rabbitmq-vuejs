@@ -11,9 +11,10 @@ const routes = [
         component: WoodenHouseConfigurator
     },
     {
-        path: '/product',
+        path: '/product/:category?',
         name: 'product-list',
-        component: ProductList
+        component: ProductList,
+        props: true
     },
     // Możesz dodać inne trasy tutaj
 ]

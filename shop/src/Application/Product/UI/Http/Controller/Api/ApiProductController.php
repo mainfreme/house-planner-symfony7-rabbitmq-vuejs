@@ -38,4 +38,10 @@ class ApiProductController extends AbstractController
             Response::HTTP_OK
         );
     }
+
+    #[Route('/house-configurator/save', name: 'house-config-save', methods: 'POST')]
+    public function saveHouseConfig(Request $request): JsonResponse
+    {
+        dd($request);
+    }
 }
