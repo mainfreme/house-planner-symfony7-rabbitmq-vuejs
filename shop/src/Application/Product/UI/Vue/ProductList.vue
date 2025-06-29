@@ -1,5 +1,18 @@
+<script setup>
+defineProps({
+  category: {
+    type: String,
+    default: null
+  }
+});
+</script>
+
 <template>
   <div class="max-w-3xl mx-auto p-4">
+    <h1>Lista produktów</h1>
+    <p v-if="category">Kategoria: {{ category }}</p>
+    <p v-else>Wszystkie kategorie</p>
+
     <!-- Loader -->
     <Loader v-if="loading" />
 
