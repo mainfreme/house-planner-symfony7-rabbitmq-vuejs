@@ -68,9 +68,9 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
                 ->setParameter('name', '%' . $criteria['name'] . '%');
         }
 
-        if (!empty($criteria['type'])) {
+        if (!empty($criteria['category'])) {
             $qb->andWhere('pt.name = :pt_name')
-                ->setParameter('pt_name', $criteria['type']);
+                ->setParameter('pt_name', $criteria['category']);
         }
 
         if (!empty($criteria['price_min'])) {
@@ -83,12 +83,36 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
                 ->setParameter('price_max', $criteria['price_max']);
         }
 
-        if ($criteria['is_active'] !== null) {
-            $qb->andWhere('p.is_active = :is_active')
-                ->setParameter('is_active', $criteria['is_active']);
+        if (!empty($criteria['is_active'])) {
+            $qb->andWhere('p.is_active = :active')
+                ->setParameter('active', $criteria['is_active']);
+        }
+
+        if (!empty($criteria['page'])) {
+            $qb
+                ->setFirstResult(($criteria['page'] - 1) * 10)
+                ->setMaxResults(10);
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findMinMaxPrice(string $category = ''): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('MIN(p.price) as min_price, MAX(p.price) as max_price')
+            ->where('p.is_active = :active')
+            ->setParameter('active', true);
+
+        if (!empty($category)) {
+            $qb
+                ->leftJoin('p.type', 'pt')
+                ->andWhere('pt.name LIKE :pt_name')
+                ->setParameter('pt_name', '%'.$category.'%');
+        }
+
+        return $qb->getQuery()
+            ->getSingleResult();
     }
 
 }
