@@ -3,7 +3,7 @@
 namespace App\Application\Product\UI\Http\Controller;
 
 use App\Application\Menu\Service\MenuService;
-use App\Application\Product\Form\ProductSearchType;
+use App\Application\Product\Form\ProductSearchForm;
 use App\Application\Product\Form\ProductTypeAddForm;
 use App\Domain\Product\Entity\ProductType;
 use App\Infrastructure\Persistence\Doctrine\Product\ProductRepository;
@@ -34,7 +34,7 @@ class ProductController extends AbstractController
     #[Route('/{name}', name: 'product_search', defaults: ['name' => null])]
     public function search(Request $request, ProductRepository $productRepository, ?string $name): Response
     {
-        $form = $this->createForm(ProductSearchType::class);
+        $form = $this->createForm(ProductSearchForm::class);
         $form->handleRequest($request);
 
         $criteria = $form->getData();
