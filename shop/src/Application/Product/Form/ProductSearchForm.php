@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProductSearchType extends AbstractType
+class ProductSearchForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -27,15 +27,15 @@ class ProductSearchType extends AbstractType
                 'placeholder' => 'Choose a type',
                 'required' => false,
             ])
-            ->add('price_min', TextType::class, [
+            ->add('priceMin', TextType::class, [
                 'label' => 'Min Price',
                 'required' => false,
             ])
-            ->add('price_max', TextType::class, [
+            ->add('priceMax', TextType::class, [
                 'label' => 'Max Price',
                 'required' => false,
             ])
-            ->add('is_active', ChoiceType::class, [
+            ->add('isActive', ChoiceType::class, [
                 'label' => 'Status',
                 'choices' => [
                     'All' => null,
