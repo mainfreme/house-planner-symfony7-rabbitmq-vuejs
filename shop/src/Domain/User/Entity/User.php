@@ -6,7 +6,7 @@ use App\Infrastructure\Persistence\Doctrine\User\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use App\Domain\User\Enum\RoleEnum;
+use App\Domain\User\Enum\RuleEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -58,8 +58,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
 
-        if (!in_array(RoleEnum::USER->value, $roles)) {
-            $roles[] = RoleEnum::USER->value;
+        if (!in_array(RuleEnum::USER->value, $roles)) {
+            $roles[] = RuleEnum::USER->value;
         }
 
         return array_unique($roles);
@@ -68,12 +68,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Ustawia role jako tablicę enumów lub stringów
      *
-     * @param RoleEnum[]|string[] $roles
+     * @param RuleEnum[]|string[] $roles
      */
     public function setRoles(array $roles): self
     {
         $this->roles = array_map(
-            fn($role) => $role instanceof RoleEnum ? $role->value : (string) $role,
+            fn($role) => $role instanceof RuleEnum ? $role->value : (string) $role,
             $roles
         );
 

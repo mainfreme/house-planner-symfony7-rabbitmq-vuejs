@@ -2,7 +2,7 @@
 
 namespace App\Domain\User\Enum;
 
-enum RoleEnum: string
+enum RuleEnum: string
 {
     case USER = 'ROLE_USER';
     case ADMIN = 'ROLE_ADMIN';
@@ -10,7 +10,7 @@ enum RoleEnum: string
 
     public static function fromStrings(array $roles): array
     {
-        return array_map(fn($role) => RoleEnum::from($role), $roles);
+        return array_map(fn($role) => RuleEnum::from($role), $roles);
     }
 
     public static function toStrings(array $enums): array

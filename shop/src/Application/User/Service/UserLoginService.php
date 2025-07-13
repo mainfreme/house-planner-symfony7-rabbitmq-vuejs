@@ -3,12 +3,12 @@
 namespace App\Application\User\Service;
 
 use App\Domain\User\Entity\User;
-use App\Infrastructure\Persistence\Doctrine\Client\UserRepository;
+use App\Infrastructure\Persistence\Doctrine\User\UserRepository;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use App\Application\User\Event\UserLoggedInEvent;
 
-class LoginService
+class UserLoginService
 {
     public function __construct(
         private readonly UserRepository              $userRepository,

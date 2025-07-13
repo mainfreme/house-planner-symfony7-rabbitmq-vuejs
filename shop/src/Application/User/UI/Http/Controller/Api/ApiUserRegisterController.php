@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller\Auth;
+namespace App\Application\User\UI\Http\Controller\Api;
 
-use App\Application\User\Dto\UserRegisterDto;
-use App\Application\User\Form\UserRegisterForm;
+use App\Application\User\UI\Dto\UserRegisterDto;
+use App\Application\User\UI\Form\UserRegisterForm;
 use App\Application\User\Service\UserRegistrationService;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,7 +14,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/api/auth')]
-class UserRegisterController extends AbstractController
+class ApiUserRegisterController extends AbstractController
 {
     #[Route('/register', name: 'api_register_user', methods: ['POST'])]
     public function register(

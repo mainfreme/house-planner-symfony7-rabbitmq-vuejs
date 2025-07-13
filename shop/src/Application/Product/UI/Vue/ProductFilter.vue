@@ -1,101 +1,95 @@
 <template>
-  <div class="p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
-    <h3 class="text-lg font-semibold mb-3">Filtry</h3>
-    <form @submit.prevent="applyFilters">
-      <div class="mb-4">
-        <label for="filter-name" class="block text-sm font-medium text-gray-700">Nazwa produktu</label>
-        <input
-            type="text"
-            id="filter-name"
-            v-model="filters.name"
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="np. Ławka parkowa"
-        />
-      </div>
-
-      <div class="mb-4">
-        <label for="filter-type" class="block text-sm font-medium text-gray-700">Typ</label>
-        <input
-            type="text"
-            id="filter-type"
-            v-model="filters.type"
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="np. żeliwna"
-        />
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Zakres cenowy</label>
-        <div v-if="loadingRange" class="text-sm text-gray-500">Ładowanie zakresu cen...</div>
-        <div v-else>
-          <div class="flex justify-between text-sm text-gray-600">
-            <span>{{ filters.price_min }} zł</span>
-            <span>{{ filters.price_max }} zł</span>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="h6 mb-0">Filtry</h3>
+    </div>
+    <div class="card-body">
+      <form @submit.prevent="applyFilters">
+        <div style="margin-left: 20px; margin-right: 20px;">
+          <!-- Nazwa produktu -->
+          <div class="mb-3">
+            <label for="filter-name" class="form-label">Nazwa produktu</label>
+            <input
+                type="text"
+                id="filter-name"
+                v-model="filters.name"
+                class="form-control"
+                placeholder="np. Ławka parkowa"
+            />
           </div>
-          <div class="mt-2 grid grid-cols-2 gap-4">
-            <div>
-              <label for="price_min" class="text-xs text-gray-500">Cena min.</label>
-              <input
-                  type="range"
-                  id="price_min"
+
+          <!-- Kategoria produktu -->
+          <div class="mb-3">
+            <label for="filter-type" class="form-label">Kategoria</label>
+            <multiselect
+                v-model="filters.category"
+                :options="categories"
+                :multiple="false"
+                :select-label="''"
+                :selected-label="''"
+                :deselect-label="''"
+                placeholder="Wybierz"
+                label="name"
+                track-by="name"
+            />
+          </div>
+
+          <!-- Zakres cenowy -->
+          <div class="mb-4">
+            <label class="form-label">Zakres cenowy</label>
+            <div v-if="loadingRange" class="form-text">Ładowanie zakresu cen...</div>
+            <div v-else>
+              <Slider
+                  v-model="priceRangeModel"
                   :min="priceRange.min"
                   :max="priceRange.max"
-                  v-model.number="filters.price_min"
-                  class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-            <div>
-              <label for="price_max" class="text-xs text-gray-500">Cena max.</label>
-              <input
-                  type="range"
-                  id="price_max"
-                  :min="priceRange.min"
-                  :max="priceRange.max"
-                  v-model.number="filters.price_max"
-                  class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  :step="20"
+                  :tooltip="true"
+                  :tooltipPosition="'bottom'"
+                  :lazy="true"
+                  class="mb-2"
               />
             </div>
           </div>
-        </div>
-      </div>
+          <div class="mt-3">
+            &nbsp;
+          </div>
 
-      <div class="mb-4">
-        <div class="flex items-center">
-          <input
-              id="filter-is-active"
-              type="checkbox"
-              v-model="filters.is_active"
-              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label for="filter-is-active" class="ml-2 block text-sm text-gray-900">Tylko aktywne</label>
+          <!-- Przycisk akcji -->
+          <div class="d-flex justify-content-end gap-2">
+            <button
+                type="button"
+                @click="resetFilters"
+                class="btn btn-outline-secondary btn-sm"
+            >
+              Resetuj
+            </button>
+            <button
+                type="submit"
+                class="btn btn-primary btn-sm"
+            >
+              Filtruj
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div class="flex items-center justify-end space-x-3">
-        <button
-            type="button"
-            @click="resetFilters"
-            class="px-4 py-2 bg-gray-200 text-sm font-medium text-gray-800 rounded-md hover:bg-gray-300"
-        >
-          Resetuj
-        </button>
-        <button
-            type="submit"
-            class="px-4 py-2 bg-blue-600 text-sm font-medium text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Filtruj
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
-import Loader from '@/component/Loader.vue';
+import('@vueform/slider/themes/default.css');
+import Slider from '@vueform/slider'
+import Loader from '@/component/Loader.vue'
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.css'
+
 export default {
   name: 'ProductFilter',
   components: {
     Loader,
+    Slider,
+    Multiselect,
   },
   props: {
     category: {
@@ -105,102 +99,124 @@ export default {
   },
   data() {
     return {
+      debounceTimeout: null,
+      categories: [],
       loadingRange: false,
-      // Domyślny, szeroki zakres, który zostanie nadpisany przez API
       priceRange: {
         min: 0,
         max: 10000,
       },
       filters: {
         name: '',
-        type: '',
+        category: '',
         price_min: 0,
-        price_max: 10000,
+        price_max: 0,
         is_active: true,
       },
-    };
-  },
-  watch: {
-    // Obserwuj zmianę kategorii, aby przeładować zakres cen
-    category() {
-      this.fetchPriceRange();
-    },
-    // Zapewnij, że minimalna cena nie jest wyższa od maksymalnej
-    'filters.price_min'(newVal) {
-      if (newVal > this.filters.price_max) {
-        this.filters.price_max = newVal;
-      }
-    },
-    'filters.price_max'(newVal) {
-      if (newVal < this.filters.price_min) {
-        this.filters.price_min = newVal;
-      }
     }
   },
+  created() {
+    this.filters.category = this.ucfirst(this.category)
+  },
+  computed: {
+    priceRangeModel: {
+      get() {
+        return [this.filters.price_min, this.filters.price_max]
+      },
+      set([min, max]) {
+        this.filters.price_min = min
+        this.filters.price_max = max
+      },
+    },
+  },
+  watch: {
+    'filters.price_min'(val) {
+      this.debouncedApplyFilters()
+    },
+    'filters.price_max'(val) {
+      this.debouncedApplyFilters()
+    },
+    category(newVal) {
+      // this.fetchPriceRange()
+      this.filters.category = newVal ? this.ucfirst(newVal) : ''
+    },
+  },
   methods: {
+    debouncedApplyFilters() {
+      clearTimeout(this.debounceTimeout)
+      this.debounceTimeout = setTimeout(() => {
+        this.applyFilters()
+      }, 1000)
+    },
     async fetchPriceRange() {
-      this.loadingRange = true;
+      this.loadingRange = true
       try {
-        // Używamy `encodeURIComponent` dla bezpieczeństwa
-        const categoryParam = this.category ? `?category=${encodeURIComponent(this.category)}` : '';
-        const response = await fetch(`/api/products/range-price/${categoryParam}`);
-        if (!response.ok) throw new Error('Błąd pobierania zakresu cenowego');
+        const categoryParam = this.category ? `/${encodeURIComponent(this.category)}` : ''
+        const response = await fetch(`/api/product/range-price${categoryParam}`)
+        if (!response.ok) throw new Error('Błąd pobierania zakresu cenowego')
 
-        const data = await response.json(); // Oczekujemy obiektu np. { min_price: 100, max_price: 5000 }
-
-        this.priceRange.min = data.min_price || 0;
-        this.priceRange.max = data.max_price || 10000;
-
-        // Zresetuj wartości suwaków do nowego zakresu
-        this.resetPriceSliders();
-
+        const data = await response.json()
+        this.priceRange.min = data.minPrice || 0
+        this.priceRange.max = data.maxPrice || 10000
+        this.resetPriceSliders()
       } catch (error) {
-        console.error(error);
-        // W przypadku błędu, zachowaj domyślne wartości
+        console.error(error)
       } finally {
-        this.loadingRange = false;
+        this.loadingRange = false
       }
     },
+    async fetchProductType() {
+      this.loadingRange = true
+      try {
+        const response = await fetch(`/api/product-type/list`)
+        if (!response.ok) throw new Error('Błąd pobierania kategorii produktów')
+
+        const data = await response.json()
+        this.categories = data.items
+
+        if (this.category) {
+            const match = this.categories.find(
+                (c) => c.name.toLowerCase() === this.category.toLowerCase()
+            )
+            this.filters.category = match || null
+        }
+      } catch (error) {
+        this.categories = []
+        console.error(error)
+      } finally {
+        this.loadingRange = false
+      }
+    },
+    ucfirst(str) {
+      if (!str) return ''
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+    },
+
     applyFilters() {
-      // Wyślij sklonowany obiekt filtrów do rodzica, aby uniknąć bezpośredniej mutacji
-      this.$emit('apply-filters', { ...this.filters });
+      this.$emit('apply-filters', {...this.filters})
     },
     resetPriceSliders() {
-      this.filters.price_min = this.priceRange.min;
-      this.filters.price_max = this.priceRange.max;
+      this.filters.price_min = this.priceRange.min
+      this.filters.price_max = this.priceRange.max
     },
     resetFilters() {
-      this.filters.name = '';
-      this.filters.type = '';
-      this.filters.is_active = true;
-      this.resetPriceSliders();
-      // Po zresetowaniu formularza, od razu zastosuj filtry (czyli pokaż wszystko)
-      this.applyFilters();
+      this.filters.name = ''
+      this.filters.type = ''
+      this.filters.is_active = true
+      this.filters.category = []
+      this.resetPriceSliders()
+      this.applyFilters()
     },
   },
   mounted() {
-    this.fetchPriceRange();
+    this.fetchProductType()
+    this.fetchPriceRange()
   },
-};
+}
 </script>
 
 <style scoped>
-/* Styl dla suwaków dla lepszej widoczności */
-input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #3b82f6; /* Kolor niebieski */
-  cursor: pointer;
-  border-radius: 50%;
-}
-
-input[type='range']::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  background: #3b82f6;
-  cursor: pointer;
-  border-radius: 50%;
+.vue-slider {
+  width: 90%;
 }
 </style>

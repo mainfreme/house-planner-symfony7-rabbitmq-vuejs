@@ -1,5 +1,5 @@
 <div id="app">
-    <product-list></product-list>
+    <product-list :category="{{ category|e('html_attr') }}"></product-list>
 </div>
 
 <script src="{{ asset('build/app.js') }}"></script>

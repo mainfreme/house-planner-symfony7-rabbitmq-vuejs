@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\FileProcessing;
+namespace App\Application\FileProcessing\Service;
 
 class FileScanService
 {

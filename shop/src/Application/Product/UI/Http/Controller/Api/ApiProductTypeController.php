@@ -4,13 +4,13 @@ namespace App\Application\Product\UI\Http\Controller\Api;
 
 use App\Application\Product\Service\ProductTypeService;
 use App\Domain\Product\Entity\ProductType;
-use App\Infrastructure\Persistence\Doctrine\Product\ProductTypeRepository;
 use App\Validator\ProductTypeValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/product-type')]
 class ApiProductTypeController extends AbstractController
@@ -18,10 +18,21 @@ class ApiProductTypeController extends AbstractController
     public function __construct(
         private readonly ProductTypeService   $productTypeService,
         private readonly ProductTypeValidator $productTypeValidator,
-        private readonly ProductTypeRepository $productTypeRepository,
-    ) {
+    )
+    {
     }
 
+    #[Route('/list', name: 'api_product_type_list', methods: 'GET')]
+    public function list(): JsonResponse
+    {
+        try {
+            $productCategoryCollectionList = $this->productTypeService->getList();
+        } catch (\Exception $e) {
+            return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse(['items' => $productCategoryCollectionList->getArray()], Response::HTTP_OK);
+    }
 
     #[Route('/add', name: 'api_product_type_add', methods: 'POST')]
     public function create(Request $request): JsonResponse

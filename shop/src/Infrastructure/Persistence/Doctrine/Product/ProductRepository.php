@@ -2,9 +2,11 @@
 
 namespace App\Infrastructure\Persistence\Doctrine\Product;
 
+use App\Application\Shared\Dto\PaginatedResultDto;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductType;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
+use App\Infrastructure\Persistence\Doctrine\Paginator\DoctrinePaginator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -58,7 +60,7 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
         $this->entityManager->flush();
     }
 
-    public function findByCriteria(array $criteria): array
+    public function findByCriteria(array $criteria): PaginatedResultDto
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.type', 'pt');
@@ -67,25 +69,24 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
             $qb->andWhere('p.name LIKE :name')
                 ->setParameter('name', '%' . $criteria['name'] . '%');
         }
-
-        if (!empty($criteria['category'])) {
+        if (!empty($criteria['type'])) {
             $qb->andWhere('pt.name = :pt_name')
-                ->setParameter('pt_name', $criteria['category']);
+                ->setParameter('pt_name', $criteria['type']);
         }
 
-        if (!empty($criteria['price_min'])) {
-            $qb->andWhere('p.price >= :price_min')
-                ->setParameter('price_min', $criteria['price_min']);
+        if (!empty($criteria['priceMin'])) {
+            $qb->andWhere('p.price >= :priceMin')
+                ->setParameter('priceMin', $criteria['priceMin']);
         }
 
-        if (!empty($criteria['price_max'])) {
-            $qb->andWhere('p.price <= :price_max')
-                ->setParameter('price_max', $criteria['price_max']);
+        if (!empty($criteria['priceMax'])) {
+            $qb->andWhere('p.price <= :priceMax')
+                ->setParameter('priceMax', $criteria['priceMax']);
         }
 
-        if (!empty($criteria['is_active'])) {
+        if (!empty($criteria['isActive'])) {
             $qb->andWhere('p.is_active = :active')
-                ->setParameter('active', $criteria['is_active']);
+                ->setParameter('active', $criteria['isActive']);
         }
 
         if (!empty($criteria['page'])) {
@@ -94,21 +95,24 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
                 ->setMaxResults(10);
         }
 
-        return $qb->getQuery()->getResult();
+        $page = $criteria['page'] ?? 1;
+        $limit = $criteria['limit'] ?? 5;
+
+        return DoctrinePaginator::paginate($qb, $page, $limit);
     }
 
-    public function findMinMaxPrice(string $category = ''): array
+    public function findMinMaxPrice(string $category = '', bool $active = true): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select('MIN(p.price) as min_price, MAX(p.price) as max_price')
             ->where('p.is_active = :active')
-            ->setParameter('active', true);
+            ->setParameter('active', $active);
 
         if (!empty($category)) {
             $qb
                 ->leftJoin('p.type', 'pt')
-                ->andWhere('pt.name LIKE :pt_name')
-                ->setParameter('pt_name', '%'.$category.'%');
+                ->andWhere('pt.name = :product_type_name')
+                ->setParameter('product_type_name', ucfirst($category));
         }
 
         return $qb->getQuery()

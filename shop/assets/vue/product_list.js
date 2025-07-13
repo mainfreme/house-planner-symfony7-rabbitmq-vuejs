@@ -1,5 +1,9 @@
-import { createApp } from 'vue';
-import UserProfile from '../../src/application/Product/UI/Vue/ProductList.vue';
+import { createApp } from 'vue'
+import ProductList from '../../src/application/Product/UI/Vue/ProductList.vue';
 
-const app = createApp(UserProfile);
-app.mount('#product-list');
+const app = createApp({})
+
+// // Rejestracja globalna komponentu
+app.component('product-list', ProductList)
+
+app.mount('#app')
