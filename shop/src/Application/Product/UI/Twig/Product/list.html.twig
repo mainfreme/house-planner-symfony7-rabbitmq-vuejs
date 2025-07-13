@@ -10,9 +10,9 @@
 
     {% include '@product/product/list/menu.html.twig' %}
 
-    {% include '@product/product/search.html.twig' %}
+{#    {% include '@product/product/search.html.twig' %}#}
 
 {#    {% include '@product/product/list/table.html.twig' with {'products': products} %}#}
-    {% include '@product/product/list/table.html.twig' %}
+    {% include '@product/product/list/table.html.twig' with {'category': category} %}
 
 {% endblock %}

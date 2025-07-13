@@ -2,6 +2,8 @@
 
 namespace App\Domain\FileProcessing\Enum;
 
+use App\Infrastructure\FileProcessing\FileReaderInterface;
+
 enum TextFileAcceptedEnum: string
 {
     case PDF = 'pdf';

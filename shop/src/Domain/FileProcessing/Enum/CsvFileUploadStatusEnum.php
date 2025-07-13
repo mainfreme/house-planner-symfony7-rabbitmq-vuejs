@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\FilleProcessing\Enum;
+namespace App\Domain\FileProcessing\Enum;
 
 enum CsvFileUploadStatusEnum: string
 {

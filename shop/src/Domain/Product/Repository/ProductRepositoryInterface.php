@@ -2,8 +2,10 @@
 
 namespace App\Domain\Product\Repository;
 
+use App\Application\Shared\Dto\PaginatedResultDto;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductType;
+use App\Infrastructure\Persistence\Doctrine\Paginator\DoctrinePaginator;
 
 interface ProductRepositoryInterface
 {
@@ -19,5 +21,5 @@ interface ProductRepositoryInterface
 
     public function remove(Product $product): void;
 
-    public function findByCriteria(array $criteria): array;
+    public function findByCriteria(array $criteria): PaginatedResultDto;
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Application\User\Form;
+namespace App\Application\User\UI\Form;
 
-use App\Application\User\Dto\UserRegisterDto;
+use App\Application\User\UI\Dto\UserRegisterDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

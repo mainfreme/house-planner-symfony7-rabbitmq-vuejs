@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\User\Dto;
+namespace App\Application\User\UI\Dto;
 
 class UserRegisterDto
 {

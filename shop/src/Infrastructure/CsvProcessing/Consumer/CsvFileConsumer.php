@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Consumer;
+namespace App\Infrastructure\CsvProcessing\Consumer;
 
 use App\Domain\CsvProcessing\Enum\CsvFileUploadStatusEnum;
 use App\Domain\CsvProcessing\Event\CsvFileUploadedEvent;

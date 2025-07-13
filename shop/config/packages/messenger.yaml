@@ -15,7 +15,7 @@ framework:
 
             App\Application\CsvProcessing\Command\UploadCsvFileCommand: async
             App\Domain\CsvProcessing\Event\CsvFileUploadedEvent: async
-            App\Infrastructure\Consumer\CsvFileConsumer: async
+            App\Infrastructure\CsvProcessing\Consumer\CsvFileConsumer: async
             App\Domain\CsvProcessing\Event\CsvRowProcessedEvent: async_row
 
             App\Domain\Menu\Event\MenuRefreshScheduledEvent: async_stable

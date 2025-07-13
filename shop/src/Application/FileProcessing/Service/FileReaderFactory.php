@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\FileProcessing;
+namespace App\Application\FileProcessing\Service;
 
 use App\Domain\FileProcessing\Enum\TextFileAcceptedEnum;
 

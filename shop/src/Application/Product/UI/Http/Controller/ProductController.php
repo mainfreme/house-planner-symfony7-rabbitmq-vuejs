@@ -3,7 +3,7 @@
 namespace App\Application\Product\UI\Http\Controller;
 
 use App\Application\Menu\Service\MenuService;
-use App\Application\Product\Form\ProductSearchType;
+use App\Application\Product\Form\ProductSearchForm;
 use App\Application\Product\Form\ProductTypeAddForm;
 use App\Domain\Product\Entity\ProductType;
 use App\Infrastructure\Persistence\Doctrine\Product\ProductRepository;
@@ -32,21 +32,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{name}', name: 'product_search', defaults: ['name' => null])]
-    public function search(Request $request, ProductRepository $productRepository, ?string $name): Response
+    public function search(Request $request, ?string $name): Response
     {
-        $form = $this->createForm(ProductSearchType::class);
-        $form->handleRequest($request);
-
-        $criteria = $form->getData();
-        if (empty($criteria)) {
-            $criteria = ['is_active' => 'true','type'=>($name?'':$name)];
-        }
-//        $products = $productRepository->findByCriteria($criteria);
-
         return $this->render('@product/product/list.html.twig', [
-            'form' => $form->createView(),
-            '$criteria' => $criteria,
-//            'products' => $products,
+            'category' => $name,
         ]);
     }
 
