@@ -3,8 +3,8 @@
 namespace App\Application\Settings\Service;
 
 
-use App\Application\Menu\Command\ScheduleMenuRefreshCommand;
-use App\Infrastructure\Persistence\Doctrine\Product\ProductTypeRepository;
+use App\Menu\Application\Command\ScheduleMenuRefreshCommand;
+use App\Product\Infrastructure\Persistence\Doctrine\ProductTypeRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

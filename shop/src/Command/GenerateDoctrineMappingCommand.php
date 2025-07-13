@@ -35,7 +35,7 @@ class GenerateDoctrineMappingCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $domainDir = $this->projectDir . '/src/Domain';
+        $domainDir = $this->projectDir . '/src';
         $filesystem = new Filesystem();
 
         if (!$filesystem->exists($domainDir)) {
@@ -62,8 +62,8 @@ class GenerateDoctrineMappingCommand extends Command
                 $mappings[$contextName] = [
                     'is_bundle' => false,
                     'type' => 'attribute',
-                    'dir' => '%kernel.project_dir%/src/Domain/' . $contextName . '/Entity',
-                    'prefix' => 'App\\Domain\\' . $contextName . '\\Entity',
+                    'dir' => '%kernel.project_dir%/src/' . $contextName . '/Domain/Entity',
+                    'prefix' => 'App\\' . $contextName . '\\Domain\\Entity',
                 ];
             }
         }

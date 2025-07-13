@@ -18,27 +18,28 @@ services:
     App\:
         resource: '../src/'
         exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+#            - '../src/DependencyInjection/'
+#            - '../src/Kernel.php'
+            - '../src/**/Domain/**'
+            - '../src/**/UI/**'
     Redis:
         class: Redis
         calls:
             - [ connect, [ 'redis', 6379 ] ]
 
-    App\Infrastructure\Persistence\Doctrine\Product\ProductTypeRepository:
+    App\Product\Infrastructure\Persistence\Doctrine\ProductTypeRepository:
         arguments:
             $registry: '@doctrine'
             $entityManager: '@doctrine.orm.entity_manager'
 
-    App\Application\Menu\Service\MenuService:
+    App\Menu\Application\Service\MenuService:
         autowire: true
         tags:
             - { name: twig.global }
 
     App\Infrastructure\Twig\MenuExtension:
         arguments:
-            $menuService: '@App\Application\Menu\Service\MenuService'
+            $menuService: '@App\Menu\Application\Service\MenuService'
         tags:
             - { name: 'twig.extension', priority: -10 }
 
@@ -47,6 +48,9 @@ services:
         arguments:
             - '@doctrine' # lub '@Doctrine\Persistence\ManagerRegistry'
     Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
+
+    App\Dashboard\Application\UI\Http\Controller\DashboardController:
+        tags: [ 'controller.service_arguments' ]
 
 
 #    App\Infrastructure\User\MessageHandler\UserLoggedInEventHandler:

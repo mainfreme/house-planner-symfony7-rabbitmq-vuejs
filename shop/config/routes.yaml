@@ -7,7 +7,7 @@ file_processing_controllers:
     type: attribute
 
 menu_admin_controllers:
-    resource: ../src/Application/Menu/UI/Http/Controller/
+    resource: ../src/Menu/Application/UI/Http/Controller/
     type: attribute
 
 documents_controllers:
@@ -15,15 +15,15 @@ documents_controllers:
     type: attribute
 
 dashboard_controllers:
-    resource: ../src/Application/Dashboard/UI/Http/Controller/
+    resource: ../src/Dashboard/Application/UI/Http/Controller/
     type: attribute
 
 product_controllers:
-    resource: ../src/Application/Product/UI/Http/Controller/
+    resource: ../src/Product/Application/UI/Http/Controller/
     type: attribute
 
 api_product_controllers:
-    resource: ../src/Application/Product/UI/Http/Controller/Api/
+    resource: ../src/Product/Application/UI/Http/Controller/Api/
     type: attribute
 
 settings_controllers:
@@ -44,9 +44,9 @@ api_user_controllers:
     type: attribute
 
 client_controllers:
-    resource: ../src/Application/Client/UI/Http/Controller/
+    resource: ../src/Client/Application/UI/Http/Controller/
     type: attribute
 
 api_client_controllers:
-    resource: ../src/Application/Client/UI/Http/Controller/Api/
+    resource: ../src/Client/Application/UI/Http/Controller/Api/
     type: attribute
