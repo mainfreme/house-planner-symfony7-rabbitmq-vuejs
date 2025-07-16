@@ -8,10 +8,8 @@ use App\Menu\Application\Command\ScheduleMenuRefreshCommand;
 use App\Product\Domain\Entity\ProductType;
 use App\Product\Infrastructure\Persistence\Doctrine\ProductTypeRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class MenuService
 {
@@ -44,6 +42,11 @@ class MenuService
         }
 
         try {
+            $cacheMenu = $this->cache->get(self::CACHE_KEY);
+            if (!$cacheMenu) {
+                return $generateMenu;
+            }
+
             $menu = unserialize($this->cache->get(self::CACHE_KEY));
 
             if (!$menu) {
