@@ -6,6 +6,7 @@
 parameters:
     upload_directory: '%kernel.project_dir%/var/uploads'
     microservice.ci4_url: '%env(resolve:MICROSERVICE_CI4_URL)%'
+    app.pagination_limit: '%env(int:PAGINATION_LIMIT)%'
 
 services:
     # default configuration for services in *this* file
@@ -18,19 +19,16 @@ services:
     App\:
         resource: '../src/'
         exclude:
-#            - '../src/DependencyInjection/'
-#            - '../src/Kernel.php'
             - '../src/**/Domain/**'
-            - '../src/**/UI/**'
     Redis:
         class: Redis
         calls:
             - [ connect, [ 'redis', 6379 ] ]
 
-    App\Product\Infrastructure\Persistence\Doctrine\ProductTypeRepository:
-        arguments:
-            $registry: '@doctrine'
-            $entityManager: '@doctrine.orm.entity_manager'
+    App\Product\Infrastructure\Persistence\Doctrine\:
+        resource: '../src/Product/Infrastructure/Persistence/Doctrine/*'
+        autowire: true
+        autoconfigure: true
 
     App\Menu\Application\Service\MenuService:
         autowire: true
@@ -56,3 +54,16 @@ services:
 #    App\Infrastructure\User\MessageHandler\UserLoggedInEventHandler:
 #        arguments:
 #            $microserviceUrl: '%microservice.ci4_url%'
+
+    App\Product\Infrastructure\Persistence\Doctrine\TypeProductRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Product\Infrastructure\Persistence\Doctrine\ProductRepository:
+        tags: ['doctrine.repository_service']
+
+    App\Product\Domain\Repository\ProductTypeRepositoryInterface:
+        '@App\Product\Infrastructure\Persistence\Doctrine\ProductTypeRepository'
+
+    App\Product\Domain\Repository\ProductRepositoryInterface:
+        '@App\Product\Infrastructure\Persistence\Doctrine\ProductRepository'
+

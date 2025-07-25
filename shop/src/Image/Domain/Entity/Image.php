@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Domain\Image\Entity;
+declare(strict_types=1);
 
-use App\Domain\Product\Entity\Product;
-use App\Infrastructure\Persistence\Doctrine\Image\ImageRepository;
+namespace App\Image\Domain\Entity;
+
+use App\Product\Domain\Entity\Product;
+use App\Image\Infrastructure\Persistence\Doctrine\ImageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ORM\Table(name: "image")]
@@ -34,7 +36,7 @@ class Image
     private ?Product $product = null;
 
     #[ORM\Column(type: 'uuid')]
-    private ?Uuid $uuid = null;
+    private ?UuidInterface $uuid = null;
 
     #[ORM\Column(nullable: true)]
     private ?bool $is_main = null;
@@ -104,12 +106,12 @@ class Image
         return $this;
     }
 
-    public function getUuid(): ?Uuid
+    public function getUuid(): ?UuidInterface
     {
         return $this->uuid;
     }
 
-    public function setUuid(Uuid $uuid): static
+    public function setUuid(UuidInterface $uuid): static
     {
         $this->uuid = $uuid;
 

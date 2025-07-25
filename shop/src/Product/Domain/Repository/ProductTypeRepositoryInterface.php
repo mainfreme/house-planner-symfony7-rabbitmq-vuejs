@@ -6,7 +6,7 @@ namespace App\Product\Domain\Repository;
 
 use App\Product\Domain\Entity\ProductType;
 
-interface TypeProductRepositoryInterface
+interface ProductTypeRepositoryInterface
 {
     public function save(ProductType $typeProduct): void;
 

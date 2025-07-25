@@ -66,8 +66,10 @@
             </button>
             <button
                 type="submit"
-                class="btn btn-primary btn-sm"
+                class="btn btn-primary btn-sm d-flex align-items-center gap-2"
+                :disabled="smallLoading"
             >
+              <SmallLoader :active="smallLoading" />
               Filtruj
             </button>
           </div>
@@ -83,6 +85,8 @@ import Slider from '@vueform/slider'
 import Loader from '@/component/Loader.vue'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+import SmallLoader from '@/component/SmallLoader';
+
 
 export default {
   name: 'ProductFilter',
@@ -90,11 +94,16 @@ export default {
     Loader,
     Slider,
     Multiselect,
+    SmallLoader,
   },
   props: {
     category: {
       type: String,
       default: null,
+    },
+    smallLoading: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -148,17 +157,25 @@ export default {
         this.applyFilters()
       }, 1000)
     },
-    async fetchPriceRange() {
+    async fetchPriceRange(newCategory) {
       this.loadingRange = true
       try {
-        const categoryParam = this.category ? `/${encodeURIComponent(this.category)}` : ''
+        if(newCategory === null) {
+          this.filters.category = '';
+        }
+        const categoryParam = this.filters.category ? `/${encodeURIComponent(this.filters.category)}` : ''
+        console.log(categoryParam);
         const response = await fetch(`/api/product/range-price${categoryParam}`)
         if (!response.ok) throw new Error('Błąd pobierania zakresu cenowego')
 
         const data = await response.json()
         this.priceRange.min = data.minPrice || 0
         this.priceRange.max = data.maxPrice || 10000
-        this.resetPriceSliders()
+
+        this.filters.price_min = this.priceRange.min
+        this.filters.price_max = this.priceRange.max
+
+        // this.resetPriceSliders()
       } catch (error) {
         console.error(error)
       } finally {
@@ -174,9 +191,9 @@ export default {
         const data = await response.json()
         this.categories = data.items
 
-        if (this.category) {
+        if (this.filters.category) {
             const match = this.categories.find(
-                (c) => c.name.toLowerCase() === this.category.toLowerCase()
+                (c) => c.link.toLowerCase() === this.filters.category.toLowerCase()
             )
             this.filters.category = match || null
         }
@@ -191,8 +208,7 @@ export default {
       if (!str) return ''
       return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
     },
-
-    applyFilters() {
+    async applyFilters() {
       this.$emit('apply-filters', {...this.filters})
     },
     resetPriceSliders() {
@@ -203,8 +219,12 @@ export default {
       this.filters.name = ''
       this.filters.type = ''
       this.filters.is_active = true
-      this.filters.category = []
-      this.resetPriceSliders()
+      this.filters.category = ''
+      this.fetchPriceRange(null);
+      // this.filters.price_min = this.priceRange.min
+      // this.filters.price_max = this.priceRange.max
+
+      // this.resetPriceSliders()
       this.applyFilters()
     },
   },
@@ -216,7 +236,5 @@ export default {
 </script>
 
 <style scoped>
-.vue-slider {
-  width: 90%;
-}
+
 </style>

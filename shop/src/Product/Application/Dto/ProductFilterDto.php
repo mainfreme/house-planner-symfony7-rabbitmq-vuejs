@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Product\Application\Dto;
 
+use App\Product\Application\Service\SlugGenerator;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class ProductFilterDto
@@ -27,7 +28,9 @@ final class ProductFilterDto
     #[Assert\GreaterThanOrEqual(value: 0, message: 'Maximum price cannot be negative.')]
     private ?string $priceMax = null;
 
-    private ?string $type = null;
+    private ?string $category = null;
+
+    private ?string $categoryId = null;
 
     #[Assert\Type(type: 'bool', message: 'isActive must be a boolean.')]
     private ?bool $isActive = null;
@@ -99,17 +102,33 @@ final class ProductFilterDto
     /**
      * @return string|null
      */
-    public function getType(): ?string
+    public function getCategory(): ?string
     {
-        return $this->type;
+        return $this->category;
     }
 
     /**
-     * @param string|null $type
+     * @param string|null $category
      */
-    public function setType(?string $type): void
+    public function setCategory(?string $category): void
     {
-        $this->type = $type;
+        $this->category = SlugGenerator::generateSlug($category);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string|null $categoryId
+     */
+    public function setCategoryId(?string $categoryId): void
+    {
+        $this->categoryId = $categoryId;
     }
 
     /**

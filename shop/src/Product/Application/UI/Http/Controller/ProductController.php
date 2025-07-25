@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+//declare(strict_types=1);
 
 namespace App\Product\Application\UI\Http\Controller;
 
@@ -19,9 +19,9 @@ use Symfony\Component\HttpFoundation\Response;
 class ProductController extends AbstractController
 {
 
-    public function __construct(private readonly MenuService $menuService)
-    {
-    }
+//    public function __construct(private readonly MenuService $menuService)
+//    {
+//    }
 
     #[Route('/list', name: 'product_list')]
     public function index(): Response
@@ -61,14 +61,14 @@ class ProductController extends AbstractController
 //        ]);
 //    }
 
-    #[Route('/type/list', name: 'product_type_list')]
-    public function list(ProductTypeRepository $productTypeRepository): Response
-    {
-        $products = $productTypeRepository->findAll();
-
-        return $this->render('@product/productType/table.html.twig', [
-            'products' => $products,
-        ]);
-    }
+//    #[Route('/type/list', name: 'product_type_list')]
+//    public function list(ProductTypeRepository $productTypeRepository): Response
+//    {
+//        $products = $productTypeRepository->findAll();
+//
+//        return $this->render('@product/productType/table.html.twig', [
+//            'products' => $products,
+//        ]);
+//    }
 }
 

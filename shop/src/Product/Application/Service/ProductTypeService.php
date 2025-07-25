@@ -9,13 +9,14 @@ use App\Product\Application\Dto\PriceRangeDto;
 use App\Product\Application\Dto\ProductCategoryCollectionDto;
 use App\Product\Application\Dto\ProductTypeDto;
 use App\Product\Domain\Entity\ProductType;
-use App\Product\Domain\Repository\TypeProductRepositoryInterface;
+use App\Product\Domain\Repository\ProductTypeRepositoryInterface;
 
+#[AsService]
 class ProductTypeService
 {
     public function __construct(
         private readonly MenuService                    $menuService,
-        private readonly TypeProductRepositoryInterface $typeProductRepository,
+        private readonly ProductTypeRepositoryInterface $typeProductRepository,
     )
     {
     }
@@ -43,6 +44,7 @@ class ProductTypeService
             $dto = new ProductTypeDto();
             $dto->setId($productType->getId());
             $dto->setName($productType->getName());
+            $dto->setLink($productType->getLink());
             return $dto;
         }, $entities);
 

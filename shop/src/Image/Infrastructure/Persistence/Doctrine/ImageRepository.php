@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Infrastructure\Persistence\Doctrine\Image;
+declare(strict_types=1);
 
-use App\Domain\Image\Entity\Image;
-use App\Domain\Image\Repository\ImageRepositoryInterface;
+namespace App\Image\Infrastructure\Persistence\Doctrine;
+
+use App\Image\Domain\Entity\Image;
+use App\Image\Domain\Repository\ImageRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -4,7 +4,9 @@
     <div class="mb-4 border-bottom pb-2">
       <h1 class="h3 fw-bold">Lista produktów</h1>
       <p class="text-muted">
-        {{ category ? `Kategoria: ${category}` : 'Wszystkie kategorie' }}
+        <b>
+          {{ category ? `Kategoria: ${category}` : 'Wszystkie kategorie' }}
+        </b>
       </p>
     </div>
 
@@ -15,26 +17,32 @@
           @click="!showFilter && toggleFilter()"
           style="transition: width 0.3s ease; overflow: hidden;"
       >
-        <template v-if="showFilter">
-            <ProductFilter :category="category" @apply-filters="updateFilters" />
-            <button
-                class="btn btn-sm btn-outline-secondary mt-3 w-100"
-                @click.stop="toggleFilter"
-                title="Ukryj filtry"
+        <div @click="!showFilter && toggleFilter()">
+          <template v-show="!showFilter">
+            <div
+                class="vertical-text d-flex justify-content-center align-items-center h-20"
+                style="width: 20px;"
+                title="Pokaż filtry"
             >
-              Ukryj filtry
-            </button>
+              Pokaż Filtry
+            </div>
+          </template>
+        </div>
 
-        </template>
-        <template v-else>
-          <div
-              class="vertical-text d-flex justify-content-center align-items-center h-20"
-              style="width: 20px;"
-              title="Pokaż filtry"
+        <div v-show="showFilter">
+          <ProductFilter
+              :category="category"
+              :small-loading="smallLoading"
+              @apply-filters="updateFilters"
+          />
+          <button
+              class="btn btn-sm btn-outline-secondary mt-3 w-100"
+              @click.stop="toggleFilter"
+              title="Ukryj filtry"
           >
-            Filtry
-          </div>
-        </template>
+            Ukryj filtry
+          </button>
+        </div>
       </aside>
 
       <!-- Główna lista produktów -->
@@ -42,7 +50,7 @@
           :style="{ flex: showFilter ? '1 1 calc(100% - 300px)' : '1 1 100%' }"
           class="pe-3"
       >
-        <Loader v-if="loading" />
+        <Loader v-if="loading"/>
 
         <div v-else>
           <div v-if="products.length === 0" class="alert alert-info text-center">
@@ -57,7 +65,7 @@
             >
               <div class="card h-100 position-relative">
                 <img
-                    :src="product.image"
+                    :src="product.dataImage"
                     class="card-img-top"
                     :alt="product.name"
                 />
@@ -68,21 +76,25 @@
 
                 <!-- Serduszko -->
                 <button
-                    class="btn btn-success position-absolute"
-                    style="top: 10px; right: 10px;"
+                    class="btn position-absolute"
+                    :class="hoveredWishlist === product.id ? ' btn-outline-success ' : '  btn-success '"
+                    style="top: 2px; right: 2px;"
                     @mouseenter="hoveredWishlist = product.id"
                     @mouseleave="hoveredWishlist = null"
                 >
+                  <SmallLoader :active="smallLoading"/>
                   <i
-                      class="bi"
-                      :class="hoveredWishlist === product.id ? 'bi-heart-fill text-danger' : 'bi-heart'"
+                      class="fa-heart"
+                      :class="hoveredWishlist === product.id ? 'fa-regular' : 'fa-solid'"
+                      style="color: black;"
                   ></i>
                 </button>
 
                 <!-- Koszyk -->
                 <button
-                    class="btn btn-primary position-absolute"
-                    style="bottom: 10px; right: 10px;"
+                    class="btn  position-absolute"
+                    :class="hoveredCart === product.id ? 'btn-outline-primary' : 'btn-primary'"
+                    style="bottom: 2px; right: 2px;"
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title="Dodaj do koszyka"
@@ -90,10 +102,12 @@
                     @mouseleave="hoveredCart = null"
                 >
                   <i
-                      class="bi bi-cart"
-                      :class="{ 'text-black': hoveredCart === product.id, 'text-white': hoveredCart !== product.id }"
+                      class="fa-solid fa-cart-shopping"
+                      :class="{ 'text-light': hoveredCart === product.id, 'text-dark': hoveredCart !== product.id }"
+                      style="color: black;"
                   ></i>
                 </button>
+
               </div>
             </div>
           </div>
@@ -135,12 +149,14 @@
 import Loader from '@/component/Loader.vue';
 
 import ProductFilter from './ProductFilter.vue';
+import SmallLoader from '@/component/SmallLoader';
 import {ref} from "vue";
 
 export default {
   name: 'ProductList',
   components: {
     Loader,
+    SmallLoader,
     ProductFilter,
   },
   props: {
@@ -155,16 +171,16 @@ export default {
       products: [],
       page: 1,
       totalPages: 1,
-      // category: null,
       loading: false,
       activeFilters: {},
+      smallLoading: false,
     };
   },
   created() {
     // this.activeFilters.append('category', this.category);
   },
   mounted() {
-    this.loadProducts();
+    // this.loadProducts();
   },
   watch: {
     // categorySelected(newCategory) {
@@ -189,17 +205,18 @@ export default {
         });
 
         if (this.category) {
-          params.append('category', this.category);
+          // params.append('category', this.category);
         }
 
-        // Dodajemy aktywne filtry do parametrów zapytania
         for (const key in this.activeFilters) {
-          let value = this.activeFilters[key];
-          // Dodajemy tylko niepuste wartości, aby nie zaśmiecać URL
-          if (value === null) {
-            value = '';
+          const value = this.activeFilters[key];
+          if (key === 'category' && typeof value === 'object' && value !== null) {
+            // Wyślij kategorię jako dwa osobne parametry
+            params.append('category', value.name || '');
+            params.append('category_id', parseInt(value.id) || null);
+          } else if (value !== null && value !== undefined) {
+            params.append(key, value);
           }
-          params.append(key, value);
         }
 
         const response = await fetch(`/api/product/list?${params.toString()}`);
@@ -223,37 +240,45 @@ export default {
         this.loadProducts();
       }
     },
-    updateFilters(filters) {
-      this.activeFilters = filters;
-      this.page = 1;
-      this.loadProducts();
+    async updateFilters(filters) {
+      try {
+        this.activeFilters = filters;
+        this.page = 1;
+        this.smallLoading = true;
+        await this.loadProducts();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.smallLoading = false;
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-  .expanded-filter {
-    width: 25%;
-    min-width: 250px;
-    height: auto;
-    min-height: 400px;
-  }
+.expanded-filter {
+  width: 25%;
+  min-width: 250px;
+  height: auto;
+  min-height: 400px;
+}
 
-  .collapsed-filter {
-    width: 20px;
-    min-width: 20px;
-    height: auto;
-    min-height: 400px;
-    background-color: #f8f9fa;
-    border-left: 1px solid #dee2e6;
-  }
-  .vertical-text {
-    writing-mode: vertical-rl; /* Tekst pionowo od dołu do góry */
-    transform: rotate(180deg); /* Obróć, żeby czytać od góry do dołu */
-    font-size: 12px;
-    font-weight: 600;
-    color: #6c757d; /* szary bootstrapowy */
-    user-select: none; /* Nie zaznaczaj tekstu */
-  }
+.collapsed-filter {
+  width: 20px;
+  min-width: 20px;
+  height: auto;
+  min-height: 400px;
+  background-color: #f8f9fa;
+  border-left: 1px solid #dee2e6;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl; /* Tekst pionowo od dołu do góry */
+  transform: rotate(180deg); /* Obróć, żeby czytać od góry do dołu */
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d; /* szary bootstrapowy */
+  user-select: none; /* Nie zaznaczaj tekstu */
+}
 </style>

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Domain\Image\Entity;
+declare(strict_types=1);
+
+namespace App\Image\Domain\Entity;
 
 
-use App\Infrastructure\Persistence\Doctrine\Image\ProductImagesRepository;
+use App\Image\Infrastructure\Persistence\Doctrine\ProductImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductImagesRepository::class)]

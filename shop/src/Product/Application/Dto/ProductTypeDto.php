@@ -13,6 +13,8 @@ class ProductTypeDto implements ResponseDtoInterface
 
     private string $name;
 
+    private string $link;
+
     /**
      * @return int
      */
@@ -43,6 +45,22 @@ class ProductTypeDto implements ResponseDtoInterface
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLink(): string
+    {
+        return $this->link;
+    }
+
+    /**
+     * @param string $link
+     */
+    public function setLink(string $link): void
+    {
+        $this->link = $link;
     }
 
     /**

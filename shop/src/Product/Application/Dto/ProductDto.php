@@ -20,6 +20,9 @@ final class ProductDto implements ResponseDtoInterface
         public ProductTypeDto $type,
         public bool $isActive,
         public array $parameters,
+        public ?UuidInterface $uuidImage = null,
+        public ?string $dataImage = null,
+        public ?array $parametersImage = null,
     ) {}
 
     public static function fromEntity(Product $product): self
@@ -32,6 +35,24 @@ final class ProductDto implements ResponseDtoInterface
             type: self::mapType($product->getType()),
             isActive: $product->getIsActive(),
             parameters: $product->getParameters(),
+        );
+    }
+
+    public static function fromArray(array $productImages): self
+    {
+        $product = $productImages[0];
+
+        return new self(
+            uuid: $product->getUuid(),
+            name: $product->getName(),
+            description: $product->getDescription(),
+            price: $product->getPrice(),
+            type: self::mapType($product->getType()),
+            isActive: $product->getIsActive(),
+            parameters: $product->getParameters(),
+            uuidImage: $productImages['uuid'],
+            dataImage: $productImages['data'],
+            parametersImage: $productImages['property'],
         );
     }
 
@@ -160,4 +181,53 @@ final class ProductDto implements ResponseDtoInterface
     {
         return get_object_vars($this);
     }
+
+    /**
+     * @return UuidInterface|null
+     */
+    public function getUuidImage(): ?UuidInterface
+    {
+        return $this->uuidImage;
+    }
+
+    /**
+     * @param UuidInterface|null $uuidImage
+     */
+    public function setUuidImage(?UuidInterface $uuidImage): void
+    {
+        $this->uuidImage = $uuidImage;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDataImage(): ?string
+    {
+        return $this->dataImage;
+    }
+
+    /**
+     * @param string|null $dataImage
+     */
+    public function setDataImage(?string $dataImage): void
+    {
+        $this->dataImage = $dataImage;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getParametersImage(): ?array
+    {
+        return $this->parametersImage;
+    }
+
+    /**
+     * @param array|null $parametersImage
+     */
+    public function setParametersImage(?array $parametersImage): void
+    {
+        $this->parametersImage = $parametersImage;
+    }
+
 }

@@ -5,20 +5,27 @@ declare(strict_types=1);
 namespace App\Product\Infrastructure\Persistence\Doctrine;
 
 use App\Application\Shared\Dto\PaginatedResultDto;
+use App\Image\Domain\Entity\Image;
 use App\Product\Domain\Entity\Product;
 use App\Product\Domain\Entity\ProductType;
 use App\Product\Domain\Repository\ProductRepositoryInterface;
 use App\Infrastructure\Persistence\Doctrine\Paginator\DoctrinePaginator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsService]
 class ProductRepository extends ServiceEntityRepository implements ProductRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
 
-    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $entityManager,
+        private readonly ParameterBagInterface $params
+    )
     {
         parent::__construct($registry, Product::class);
         $this->entityManager = $entityManager;
@@ -65,15 +72,22 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
     public function findByCriteria(array $criteria): PaginatedResultDto
     {
         $qb = $this->createQueryBuilder('p')
-            ->leftJoin('p.type', 'pt');
+            ->leftJoin('p.type', 'pt')
+            ->leftJoin(Image::class, 'i', 'WITH', 'i.product = p AND i.is_main = true AND i.is_delete = false')
+            ->addSelect('i.data, i.property, i.uuid')
+        ;
 
         if (!empty($criteria['name'])) {
             $qb->andWhere('p.name LIKE :name')
                 ->setParameter('name', '%' . $criteria['name'] . '%');
         }
-        if (!empty($criteria['type'])) {
-            $qb->andWhere('pt.name = :pt_name')
-                ->setParameter('pt_name', $criteria['type']);
+        if (!empty($criteria['category'])) {
+            $qb
+                ->andWhere('pt.link = :product_type_link')
+                ->setParameter('product_type_link', strtolower($criteria['category']))
+                //                ->orWhere('pt.name = :product_type_name')
+//                ->setParameter('product_type_name', strtolower($category))
+            ;
         }
 
         if (!empty($criteria['priceMin'])) {
@@ -91,16 +105,12 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
                 ->setParameter('active', $criteria['isActive']);
         }
 
-        if (!empty($criteria['page'])) {
-            $qb
-                ->setFirstResult(($criteria['page'] - 1) * 10)
-                ->setMaxResults(10);
-        }
-
         $page = $criteria['page'] ?? 1;
-        $limit = $criteria['limit'] ?? 5;
+        $limit = $criteria['limit'] ?? $this->params->has('app.pagination_limit')
+            ? (int) $this->params->get('app.pagination_limit')
+            : 10;
 
-        return DoctrinePaginator::paginate($qb, $page, $limit);
+        return DoctrinePaginator::paginate($qb, (int)$page, (int)$limit);
     }
 
     public function findMinMaxPrice(string $category = '', bool $active = true): array
@@ -112,13 +122,14 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
 
         if (!empty($category)) {
             $qb
-                ->leftJoin('p.type', 'pt')
-                ->andWhere('pt.name = :product_type_name')
-                ->setParameter('product_type_name', ucfirst($category));
+                ->innerJoin('p.type', 'pt')
+                ->andWhere('pt.link = :product_type_link')
+                ->setParameter('product_type_link', strtolower($category))
+            ;
         }
 
         return $qb->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult(Query::HYDRATE_SCALAR);
     }
 
 }

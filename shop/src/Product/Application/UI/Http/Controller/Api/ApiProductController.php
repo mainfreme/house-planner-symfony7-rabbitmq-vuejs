@@ -7,6 +7,7 @@ namespace App\Product\Application\UI\Http\Controller\Api;
 use App\Product\Application\Dto\PriceRangeDto;
 use App\Product\Application\Dto\ProductFilterDto;
 use App\Product\Domain\Repository\ProductRepositoryInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

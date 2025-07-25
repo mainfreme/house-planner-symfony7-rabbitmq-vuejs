@@ -7,6 +7,7 @@ namespace App\Product\Application\UI\Http\Controller\Api;
 use App\Product\Application\Service\ProductTypeService;
 use App\Product\Domain\Entity\ProductType;
 use App\Validator\ProductTypeValidator;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

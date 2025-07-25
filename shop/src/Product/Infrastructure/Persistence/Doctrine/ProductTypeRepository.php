@@ -5,16 +5,31 @@ declare(strict_types=1);
 namespace App\Product\Infrastructure\Persistence\Doctrine;
 
 use App\Product\Domain\Entity\ProductType;
-use App\Product\Domain\Repository\TypeProductRepositoryInterface;
+use App\Product\Domain\Repository\ProductTypeRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 #[AsService]
-class ProductTypeRepository extends ServiceEntityRepository implements TypeProductRepositoryInterface
+class ProductTypeRepository extends ServiceEntityRepository implements ProductTypeRepositoryInterface
 {
 
     private EntityManagerInterface $entityManager;
+
+    /**
+     * Pobiera wszystkie aktywne typy produktów.
+     *
+     * @return ProductType[]
+     */
+    public function findActive(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.is_public = :is_public')
+            ->setParameter('is_public', true)
+            ->orderBy('p.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
     public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
@@ -48,20 +63,7 @@ class ProductTypeRepository extends ServiceEntityRepository implements TypeProdu
             ->getResult();
     }
 
-    /**
-     * Pobiera wszystkie aktywne typy produktów.
-     *
-     * @return ProductType[]
-     */
-    public function findActive(): array
-    {
-        return $this->createQueryBuilder('p')
-            ->where('p.is_public = :is_public')
-            ->setParameter('is_public', true)
-            ->orderBy('p.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
+
 
     public function remove(ProductType $typeProduct): void
     {
