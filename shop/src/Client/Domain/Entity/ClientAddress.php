@@ -17,7 +17,7 @@ class ClientAddress
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Street = null;
+    private ?string $street = null;
 
     #[ORM\Column(length: 20)]
     private ?string $postal_code = null;
@@ -64,12 +64,12 @@ class ClientAddress
 
     public function getStreet(): ?string
     {
-        return $this->Street;
+        return $this->street;
     }
 
-    public function setStreet(string $Street): static
+    public function setStreet(string $street): static
     {
-        $this->Street = $Street;
+        $this->street = $street;
 
         return $this;
     }
