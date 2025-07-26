@@ -51,6 +51,7 @@ class ApiProductController extends AbstractController
     #[Route('/house-configurator/save', name: 'house-config-save', methods: 'POST')]
     public function saveHouseConfig(Request $request): JsonResponse
     {
+
         dd($request->query->all());
     }
 
