@@ -1,8 +1,8 @@
 twig:
     paths:
         '%kernel.project_dir%/src/Application/CsvProcessing/UI/Twig': file_processing
-        '%kernel.project_dir%/src/Application/Menu/UI/Twig': menu_admin
-        '%kernel.project_dir%/src/Application/Dashboard/UI/Twig': dashboard
+        '%kernel.project_dir%/src/Menu/Application/UI/Twig': menu_admin
+        '%kernel.project_dir%/src/Dashboard/Application/UI/Twig': dashboard
         '%kernel.project_dir%/src/Application/Document/UI/Twig': document
-        '%kernel.project_dir%/src/Application/Product/UI/Twig': product
+        '%kernel.project_dir%/src/Product/Application/UI/Twig': product
         '%kernel.project_dir%/src/Application/WoodCalculate/UI/Twig': tree_home

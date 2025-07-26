@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Paginator;
 
-use App\Application\Product\Dto\ProductDto;
+use App\Product\Application\Dto\ProductDto;
 use App\Application\Shared\Dto\PaginatedResultDto;
-use App\Domain\Product\Entity\Product;
 use Doctrine\ORM\QueryBuilder;
 
 final class DoctrinePaginator
@@ -15,18 +14,21 @@ final class DoctrinePaginator
     public static function paginate(QueryBuilder $qb, int $page = 1, int $limit = 10): PaginatedResultDto
     {
         $countQb = clone $qb;
-        $countQb->select('COUNT(DISTINCT ' . $qb->getRootAliases()[0] . '.id)');
+        $result = $countQb
+            ->select('COUNT(DISTINCT ' . $qb->getRootAliases()[0] . '.id)')
+            ->getQuery()
+            ->getOneOrNullResult();
 
-        $total = (int)$countQb->getQuery()->getSingleScalarResult();
+        $total = (int) ($result['1'] ?? 0);
 
-        $qb->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit);
-
-        $products = $qb->getQuery()->getResult();
+        $data = $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
         $items = array_map(
-            fn(Product $product) => ProductDto::fromEntity($product),
-            $products
+            fn(array $product) => ProductDto::fromArray($product),
+            $data
         );
 
         return new PaginatedResultDto(

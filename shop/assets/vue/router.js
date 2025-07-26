@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // Importuj komponenty
 import WoodenHouseConfigurator from '../../src/Application/WoodCalculate/UI/Vue/components/WoodenHouseConfigurator.vue';
-import ProductList from '../../src/Application/Product/UI/Vue/ProductList.vue';
+import ProductList from '../../src/Product/Application/UI/Vue/ProductList.vue';
 
 const routes = [
     {

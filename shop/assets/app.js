@@ -8,7 +8,7 @@ import Loader from './vue/component/Loader'
 import { createApp } from 'vue';
 import App from './vue/App.vue';
 import router from './vue/router';
-import ProductList from "../src/Application/Product/UI/Vue/ProductList";
+import ProductList from "../src/Product/Application/UI/Vue/ProductList";
 
 const app = createApp(App);
 // app.component('WoodenHouseLoader', WoodenHouseLoader)

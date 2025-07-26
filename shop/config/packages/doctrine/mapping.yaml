@@ -1,12 +1,12 @@
 doctrine:
     orm:
         mappings:
-            Client: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/Client/Entity', prefix: App\Domain\Client\Entity }
+            Client: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Client/Domain/Entity', prefix: App\Client\Domain\Entity }
             Document: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/Document/Entity', prefix: App\Domain\Document\Entity }
             File: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/File/Entity', prefix: App\Domain\File\Entity }
             History: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/History/Entity', prefix: App\Domain\History\Entity }
-            Image: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/Image/Entity', prefix: App\Domain\Image\Entity }
-            Product: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/Product/Entity', prefix: App\Domain\Product\Entity }
+            Image: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Image/Domain/Entity', prefix: App\Image\Domain\Entity }
+            Product: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Product/Domain/Entity', prefix: App\Product\Domain\Entity }
             Template: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/Template/Entity', prefix: App\Domain\Template\Entity }
             User: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/User/Entity', prefix: App\Domain\User\Entity }
             WoodCalculate: { is_bundle: false, type: attribute, dir: '%kernel.project_dir%/src/Domain/WoodCalculate/Entity', prefix: App\Domain\WoodCalculate\Entity }

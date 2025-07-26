@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import ProductList from '../../src/application/Product/UI/Vue/ProductList.vue';
+import ProductList from '../../src/Product/application/UI/Vue/ProductList.vue';
 
 const app = createApp({})
 

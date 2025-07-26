@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Twig;
 
-use App\Application\Menu\Service\MenuService;
+use App\Menu\Application\Service\MenuService;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 
