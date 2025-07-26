@@ -4,7 +4,7 @@ namespace App\Domain\File\Entity;
 
 use App\Domain\File\Enum\FileEnum;
 
-use App\Domain\Product\Entity\Product;
+use App\Product\Domain\Entity\Product;
 use App\Repository\FileRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

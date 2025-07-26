@@ -21,4 +21,29 @@ class ApiClientController extends AbstractController
         return $this->json($customers);
     }
 
+    #[Route('/get/{id}', name: 'get-user', methods: ['GET'])]
+    public function getClient()
+    {
+
+    }
+
+    #[Route('/user', name: 'add', methods: ['POST'])]
+    public function add()
+    {
+
+    }
+
+
+    #[Route('/user/{id}', name: 'edit', methods: ['POST'])]
+    public function edit()
+    {
+
+    }
+
+
+    #[Route('/user/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete()
+    {
+
+    }
 }
