@@ -6,3 +6,4 @@ twig:
         '%kernel.project_dir%/src/Application/Document/UI/Twig': document
         '%kernel.project_dir%/src/Product/Application/UI/Twig': product
         '%kernel.project_dir%/src/Application/WoodCalculate/UI/Twig': tree_home
+        '%kernel.project_dir%/src/Client/Application/UI/Twig': client

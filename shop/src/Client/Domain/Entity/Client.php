@@ -18,7 +18,7 @@ class Client
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Name = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nip = null;
@@ -35,11 +35,14 @@ class Client
     #[ORM\Column(nullable: true)]
     private ?int $number_phone = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $country = null;
 
-    #[ORM\Column(length: 5)]
+    #[ORM\Column(length: 5, nullable: true)]
     private ?string $phone_prefix = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true, options: ['default' => false])]
+    private ?bool $is_delete = null;
 
     /**
      * @var Collection<int, ClientAddress>
@@ -59,12 +62,12 @@ class Client
 
     public function getName(): ?string
     {
-        return $this->Name;
+        return $this->name;
     }
 
-    public function setName(string $Name): static
+    public function setName(string $name): static
     {
-        $this->Name = $Name;
+        $this->name = $name;
 
         return $this;
     }
@@ -182,4 +185,24 @@ class Client
 
         return $this;
     }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsDelete(): ?bool
+    {
+        return $this->is_delete;
+    }
+
+    /**
+     * @param bool|null $is_delete
+     * @return static
+     */
+    public function setIsDelete(?bool $is_delete): static
+    {
+        $this->is_delete = $is_delete;
+        return $this;
+    }
+
+
 }

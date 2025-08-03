@@ -94,13 +94,13 @@ class ApiProductControllerTest extends TestCase
             ->with($category)
             ->willReturn($priceRange);
 
-        // Mock DTO
+        // Mock Dto
         $priceRangeDto = $this->createMock(PriceRangeDto::class);
         $priceRangeDto->expects($this->once())
             ->method('toArray')
             ->willReturn(['min' => 99.99, 'max' => 1999.99]);
 
-        // Expectacja: serializer zwraca DTO
+        // Expectacja: serializer zwraca Dto
         $serializer->expects($this->once())
             ->method('denormalize')
             ->with($priceRange, PriceRangeDto::class)

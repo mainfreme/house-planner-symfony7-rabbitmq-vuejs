@@ -67,3 +67,9 @@ services:
     App\Product\Domain\Repository\ProductRepositoryInterface:
         '@App\Product\Infrastructure\Persistence\Doctrine\ProductRepository'
 
+    App\Client\Domain\Repository\ClientAddressRepositoryInterface:
+        '@App\Client\Infrastructure\Persistence\Doctrine\ClientAddressRepository'
+    App\Client\Domain\Repository\ClientRepositoryInterface:
+        '@App\Client\Infrastructure\Persistence\Doctrine\ClientRepository'
+    App\Client\Domain\Repository\ContactRepositoryInterface:
+        '@App\Client\Infrastructure\Persistence\Doctrine\ContactRepository'

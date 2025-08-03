@@ -30,14 +30,12 @@ class ClientController extends AbstractController
     {
 
         return $this->render('@client/index.html.twig', [
-            'variable' => 'Witaj w Symfony!',
         ]);
     }
 
     #[Route('/create', name: 'client_create')]
     public function create(): Response
     {
-
         return $this->render('@client/create_form.html.twig', [
             'variable' => 'Witaj w Symfony!',
         ]);

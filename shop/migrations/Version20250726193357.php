@@ -28,6 +28,9 @@ final class Version20250726193357 extends AbstractMigration
         $this->addSql(<<<'SQL'
             ALTER INDEX uniq_8d93d649e7927c74 RENAME TO UNIQ_1483A5E9E7927C74
         SQL);
+        $this->addSql(<<<'SQL'
+            alter table client add is_delete bool default false;
+        SQL);
     }
 
     public function down(Schema $schema): void

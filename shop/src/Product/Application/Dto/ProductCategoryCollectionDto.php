@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Product\Application\Dto;
 
+use App\Application\Shared\Dto\ArrayMappableDtoInterface;
 use App\Application\Shared\Dto\ResponseDtoInterface;
 
 class ProductCategoryCollectionDto implements ResponseDtoInterface

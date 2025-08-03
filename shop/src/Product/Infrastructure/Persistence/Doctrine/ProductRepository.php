@@ -6,6 +6,7 @@ namespace App\Product\Infrastructure\Persistence\Doctrine;
 
 use App\Application\Shared\Dto\PaginatedResultDto;
 use App\Image\Domain\Entity\Image;
+use App\Product\Application\Dto\ProductDto;
 use App\Product\Domain\Entity\Product;
 use App\Product\Domain\Entity\ProductType;
 use App\Product\Domain\Repository\ProductRepositoryInterface;
@@ -85,8 +86,6 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
             $qb
                 ->andWhere('pt.link = :product_type_link')
                 ->setParameter('product_type_link', strtolower($criteria['category']))
-                //                ->orWhere('pt.name = :product_type_name')
-//                ->setParameter('product_type_name', strtolower($category))
             ;
         }
 
@@ -110,7 +109,7 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
             ? (int) $this->params->get('app.pagination_limit')
             : 10;
 
-        return DoctrinePaginator::paginate($qb, (int)$page, (int)$limit);
+        return DoctrinePaginator::paginate($qb, ProductDto::class, (int)$page, (int)$limit);
     }
 
     public function findMinMaxPrice(string $category = '', bool $active = true): array

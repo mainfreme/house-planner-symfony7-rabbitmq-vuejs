@@ -2,7 +2,7 @@
 
 namespace App\Application\Shared\Dto;
 
-class PaginatedResultDto implements ResponseDtoInterface
+class PaginatedResultDto
 {
     public function __construct(
         public readonly int   $total,

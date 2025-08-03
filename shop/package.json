@@ -8,6 +8,7 @@
         "regenerator-runtime": "^0.13.9",
         "sass": "^1.86.0",
         "sass-loader": "^16.0.5",
+        "typescript": "^5.8.3",
         "vue-loader": "^17.4.2",
         "webpack": "^5.98.0",
         "webpack-cli": "^5.1.4",
@@ -33,6 +34,7 @@
     "dependencies": {
         "@popperjs/core": "^2.11.8",
         "@vueform/slider": "^2.1.10",
+        "axios": "^1.11.0",
         "bootstrap": "^5.3.3",
         "html2canvas": "^1.4.1",
         "three": "^0.176.0",
