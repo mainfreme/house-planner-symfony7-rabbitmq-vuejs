@@ -8,6 +8,7 @@
         "regenerator-runtime": "^0.13.9",
         "sass": "^1.86.0",
         "sass-loader": "^16.0.5",
+        "ts-loader": "^9.0.0",
         "typescript": "^5.8.3",
         "vue-loader": "^17.4.2",
         "webpack": "^5.98.0",
@@ -34,10 +35,13 @@
     "dependencies": {
         "@popperjs/core": "^2.11.8",
         "@vueform/slider": "^2.1.10",
+        "@vuelidate/core": "^2.0.3",
+        "@vuelidate/validators": "^2.0.4",
         "axios": "^1.11.0",
         "bootstrap": "^5.3.3",
         "html2canvas": "^1.4.1",
         "three": "^0.176.0",
+        "v-drag": "^3.0.9",
         "vue": "^3.5.13",
         "vue-multiselect": "^3.0.0-beta.3",
         "vue-router": "^4.5.1"

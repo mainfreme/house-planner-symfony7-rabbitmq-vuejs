@@ -1,10 +1,12 @@
 <template>
-  <div class="d-flex justify-content-end mb-2">
-    <button class="btn btn-outline-secondary btn-sm" @click="toggleColumnConfig('show')">
+  <slot name="button">
+    <button
+        class="btn btn-outline-secondary btn-sm"
+        @click="toggleColumnConfig('show')"
+    >
       ⚙️ Konfiguruj kolumny
     </button>
-  </div>
-
+  </slot>
   <teleport to="body">
     <div class="modal fade" id="columnModal" tabindex="-1" aria-labelledby="columnModalLabel" aria-hidden="true" ref="columnModal">
       <div class="modal-dialog">
@@ -87,6 +89,7 @@ export default {
   },
   methods: {
     async toggleColumnConfig(type = 'toggle') {
+      this.smallLoading = true;
       if (type === 'hide') {
         localStorage.setItem('client_visible_columns', JSON.stringify(this.visibleColumnKeys));
         this.$emit('update:columns', {
@@ -110,6 +113,7 @@ export default {
       } else {
         this.columnModalInstance?.toggle();
       }
+      this.smallLoading = false;
     },
 
     resetColumns() {
@@ -122,6 +126,7 @@ export default {
 
     async loadColumnsClients() {
       try {
+
         const response = await axios.get('/api/client/list-columns');
         this.allColumns = response.data;
       } catch (error) {

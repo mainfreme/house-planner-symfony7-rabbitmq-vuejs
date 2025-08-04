@@ -71,7 +71,8 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
         }
 
         if (!empty($criteria['is_delete'])) {
-            $qb->andWhere('p.is_delete = FALSE');
+            $qb->andWhere('p.is_delete = FALSE')
+                ->orWhere('p.is_delete is NULL');
         } else {
             $qb->andWhere('p.is_delete != TRUE');
         }

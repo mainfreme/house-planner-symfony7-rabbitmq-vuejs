@@ -1,57 +1,20 @@
 <template>
-  <div class="card">
-    <p><strong>{{ contact.name }} {{ contact.surname }}</strong></p>
-    <p>{{ contact.email }} | {{ contact.phoneNumber }}</p>
-    <p>{{ shortNote }}</p>
-    <button @click="openEdit">Edytuj</button>
-    <button @click="remove">Usuń</button>
-
-    <ContactModal
-        v-if="editing"
-        :clientId="contact.client.id"
-        :contact="contact"
-        @saved="onSaved"
-        @cancel="editing = false" />
-  </div>
+  <ul>
+    <li v-for="contact in contacts" :key="contact.id" class="mb-2">
+      <div class="font-medium">{{ contact.name }}</div>
+      <div class="text-sm text-gray-600">{{ contact.phone }}</div>
+    </li>
+  </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-import ContactModal from './Modal/ContactModal.vue'
-import axios from 'axios'
+<script setup>
+import { onMounted, ref } from 'vue'
 
-export default {
-  name: 'ContactCard',
-  props: {
-    contact: { type: Object, required: true }
-  },
-  components: {
-    ContactModal
-  },
+const props = defineProps({ clientId: Number })
+const contacts = ref([])
 
-  computed: {
-    shortNote(): string {
-      return this.contact.note.length > 100 ? this.contact.note.slice(0, 100) + '…' : this.contact.note
-    }
-  },
-  setup(props, { emit }) {
-    const editing = ref(false)
-
-    const openEdit = () => editing.value = true
-    const remove = async () => {
-      await axios.delete(`/api/contacts/${props.contact.id}`)
-      emit('deleted')
-    }
-    const onSaved = () => {
-      editing.value = false
-      emit('edited')
-    }
-
-    return { editing, openEdit, remove, onSaved }
-  }
-}
+onMounted(async () => {
+  const res = await fetch(`/api/client/${props.clientId}/contacts`)
+  contacts.value = await res.json()
+})
 </script>
-
-<style scoped>
-
-</style>

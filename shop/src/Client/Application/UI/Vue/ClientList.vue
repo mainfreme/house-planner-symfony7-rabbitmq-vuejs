@@ -3,11 +3,20 @@
     <div class="row">
       <div class="col-md-12">
         <h2 class="h4 fw-bold mb-3">Lista klientów</h2>
-        <button class="btn btn-sm btn-outline-secondary" @click="refreshList">Odświerz</button>
-        <TableConfigColumns
-            :smallLoading="false"
-            @update:columns="handleColumnChange"
-        />
+
+        <div class="d-flex justify-content-end mb-2">
+          <button class="btn btn-outline-success btn-sm" @click="addClient">
+            Dodaj +
+          </button>
+          <button class="btn btn-outline-primary btn-sm" @click="refreshList">
+            Odśwież
+          </button>
+          <TableConfigColumns
+              :smallLoading="false"
+              @update:columns="handleColumnChange"
+          />
+        </div>
+
       </div>
 
       <div class="col-md-2">
@@ -40,6 +49,17 @@
                 {{ client[col.key] }}
               </td>
               <td>
+                <ClientDetailModal :clientId="client.id">
+                  <template #button="{ toggle }">
+                    <button
+                        class="btn btn-outline-secondary btn-sm"
+                        @click="toggle('show')"
+                    >
+                      Szczegóły
+                    </button>
+                  </template>
+                </ClientDetailModal>
+
                 <div v-if="!showForm">
                   <button class="btn btn-sm btn-outline-primary me-1" @click="edit(client)">Edytuj</button>
                   <button class="btn btn-sm btn-outline-danger" @click="openDeletePopup(client)">Usuń</button>
@@ -70,12 +90,14 @@
 import Loader from '@/component/Loader.vue';
 import DeletePopup from '@/component/deletePopup.vue';
 import TableConfigColumns from '@/component/TableConfigColumns.vue';
+import ClientDetailModal from './ClientDetailModal.vue';
 import ClientFilter from './ClientFilter.vue';
 import axios from 'axios';
 
 export default {
   name: 'ClientList',
   components: {
+    ClientDetailModal,
     Loader,
     DeletePopup,
     ClientFilter,
@@ -106,10 +128,10 @@ export default {
         country: ''
       },
       allColumns: [
-        { key: 'id', label: 'ID' },
-        { key: 'name', label: 'Nazwa' },
-        { key: 'email', label: 'Email' },
-        { key: 'nip', label: 'NIP' },
+        {key: 'id', label: 'ID'},
+        {key: 'name', label: 'Nazwa'},
+        {key: 'email', label: 'Email'},
+        {key: 'nip', label: 'NIP'},
       ],
       visibleColumnKeys: ['id', 'name', 'email', 'nip'],
     };
@@ -160,6 +182,11 @@ export default {
       }
     },
 
+    addClient() {
+
+    },
+
+    /* usun */
     edit(client) {
       this.showForm = true;
     },
@@ -177,7 +204,7 @@ export default {
       this.clientToDelete = client;
       this.showModal = true;
     },
-
+    /* end - usun */
     async deleteClient() {
       this.deleteError = '';
 
@@ -214,7 +241,7 @@ export default {
       this.loadClients();
     },
 
-    handleColumnChange({ columns, visibleKeys }) {
+    handleColumnChange({columns, visibleKeys}) {
       this.allColumns = columns;
       this.visibleColumnKeys = visibleKeys?.length ? visibleKeys : ['id', 'name', 'email', 'nip'];
     },

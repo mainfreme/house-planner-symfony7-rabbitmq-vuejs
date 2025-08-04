@@ -15,6 +15,8 @@ Encore
     // only needed for CDN's or subdirectory deploy
     //.setManifestKeyPrefix('build/')
 
+    .enableTypeScriptLoader()
+
     /*
      * ENTRY CONFIG
      *

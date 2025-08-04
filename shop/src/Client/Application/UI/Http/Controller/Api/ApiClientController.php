@@ -27,6 +27,15 @@ class ApiClientController extends AbstractController
     {
     }
 
+    #[Route('/get-{id}', name: 'get-client', methods: ['GET'])]
+    public function getClient(int $id): JsonResponse
+    {
+
+        $clients = $this->clientRepository->findById($id);
+
+        return new JsonResponse($clients, Response::HTTP_OK);
+    }
+
     #[Route('/list', name: 'list-client', methods: ['GET'])]
     public function list(Request $request, ValidatorInterface $validator): JsonResponse
     {
@@ -64,6 +73,7 @@ class ApiClientController extends AbstractController
     }
 
 
+
 //    #[Route('/{id}', name: 'get-client', methods: ['GET'])]
 //    public function getClient(): JsonResponse
 //    {
@@ -77,12 +87,12 @@ class ApiClientController extends AbstractController
 //    }
 //
 //
-//    #[Route('/edit/{id}', name: 'edit-client', methods: ['POST'])]
-//    public function edit(): JsonResponse
-//    {
-//
-//    }
-//
+    #[Route('/update/{id}', name: 'update-client', methods: ['PUT', 'PATCH'])]
+    public function edit(): JsonResponse
+    {
+        return new JsonResponse([''], Response::HTTP_OK);
+    }
+
     #[Route('/{id}', name: 'delete-client', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
@@ -107,11 +117,12 @@ class ApiClientController extends AbstractController
 //    {
 //    }
 //
-//    #[Route('/{id}', name: 'get-client-address', methods: ['GET'])]
-//    public function getClientAddress(): JsonResponse
-//    {
-//
-//    }
+    #[Route('/{id}/addresses', name: 'get-client-address', methods: ['GET'])]
+    public function getClientAddress(): JsonResponse
+    {
+
+        return new JsonResponse([''], Response::HTTP_OK);
+    }
 //
 //    #[Route('/add', name: 'add-client-address', methods: ['POST'])]
 //    public function addAddress(): JsonResponse
@@ -132,4 +143,12 @@ class ApiClientController extends AbstractController
 //    {
 //
 //    }
+
+    #[Route('/{id}/contacts', name: 'get-contacts-list', methods: ['GET'])]
+    public function contactsList(): JsonResponse
+    {
+
+
+        return new JsonResponse([''], Response::HTTP_OK);
+    }
 }
