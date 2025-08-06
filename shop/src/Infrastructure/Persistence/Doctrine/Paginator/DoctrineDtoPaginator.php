@@ -8,7 +8,7 @@ use App\Application\Shared\Dto\ArrayMappableDtoInterface;
 use App\Application\Shared\Dto\PaginatedResultDto;
 use Doctrine\ORM\QueryBuilder;
 
-final class DoctrinePaginator
+final class DoctrineDtoPaginator
 {
 
     public static function paginate(
