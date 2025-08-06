@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Shared\Dto;
 
-class PaginatedResultDto
+final class PaginatedResultDto implements ResponseDtoInterface
 {
     public function __construct(
         public readonly int   $total,
@@ -12,6 +14,25 @@ class PaginatedResultDto
         public readonly array $items,
     )
     {
+    }
+
+    public function toApiArray(): array
+    {
+        return [
+            'data' => $this->items,
+            'meta' => [
+                'total_item' => $this->total,
+                'per_page' => $this->limit,
+                'total_page' => $this->page,
+                'last_page' => $this->pages,
+            ],
+            'links' => [
+                'first' => '?page=1',
+                'last' => '?page=' . $this->pages,
+                'prev' => $this->page > 1 ? '?page=' . ($this->page - 1) : null,
+                'next' => $this->page < $this->pages ? '?page=' . ($this->page + 1) : null,
+            ]
+        ];
     }
 
     /**

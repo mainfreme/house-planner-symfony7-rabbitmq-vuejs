@@ -7,4 +7,6 @@ namespace App\Application\Shared\Dto;
 interface ResponseDtoInterface
 {
     public function getArray(): array;
+
+    public function toApiArray(): array;
 }
