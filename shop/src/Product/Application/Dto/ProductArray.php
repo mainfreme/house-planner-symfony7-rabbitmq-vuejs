@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Product\Application\Dto;
 
-use App\Application\Shared\Dto\ArrayMappableDtoInterface;
-use App\Application\Shared\Dto\ResponseDtoInterface;
 use App\Product\Domain\Entity\Product;
 use App\Product\Domain\Entity\ProductType;
+use App\Shared\Application\Dto\ArrayMappableInterface;
 use Ramsey\Uuid\UuidInterface;
 
 
-final class ProductDto implements ResponseDtoInterface, ArrayMappableDtoInterface
+final class ProductArray implements ArrayMappableInterface
 {
     public function __construct(
         public UuidInterface $uuid,
@@ -230,5 +229,4 @@ final class ProductDto implements ResponseDtoInterface, ArrayMappableDtoInterfac
     {
         $this->parametersImage = $parametersImage;
     }
-
 }

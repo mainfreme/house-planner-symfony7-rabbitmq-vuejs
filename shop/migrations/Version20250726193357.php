@@ -20,7 +20,7 @@ final class Version20250726193357 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
-            CREATE TABLE contact (id SERIAL NOT NULL, name VARCHAR(255) NOT NULL, surname VARCHAR(255) NOT NULL, email VARCHAR(100) NOT NULL, phone_number VARCHAR(100) NOT NULL, country VARCHAR(100) NOT NULL, language VARCHAR(100) NOT NULL, area_code VARCHAR(10) NOT NULL, note TEXT NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE contact (id SERIAL NOT NULL, name VARCHAR(255) NOT NULL, surname VARCHAR(255) NOT NULL, email VARCHAR(100) NOT NULL, phone_number varchar(15) DEFAULT NULL, country VARCHAR(100) NOT NULL, language VARCHAR(100) NOT NULL, area_code VARCHAR(10) NOT NULL, note TEXT NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
             COMMENT ON COLUMN contact.added_at IS '(DC2Type:datetime_immutable)'
@@ -30,6 +30,7 @@ final class Version20250726193357 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             alter table client add is_delete bool default false;
+            alter table client add "is_company" bool default false;
         SQL);
     }
 

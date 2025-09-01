@@ -9,25 +9,20 @@
   </slot>
 
   <teleport to="body">
-    <div v-if="visible">
-      <div class="modal-backdrop fade show" @click="toggle('hide')"></div>
-
+    <div v-if="visible" style="pointer-events: none;">
       <div
           class="modal d-block"
           ref="modal"
           :style="modalStyle"
           @mousedown.stop
+          style="pointer-events: auto;"
       >
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl" :style="{ maxWidth: '55vw', width: '50vw', height: '50vh' }">
           <div class="modal-content">
-
-            <!-- Nagłówek -->
             <div class="modal-header cursor-move" @mousedown="startDrag">
               <h5 class="modal-title">Szczegóły klienta</h5>
               <button type="button" class="btn-close" @click="toggle('hide')" />
             </div>
-
-            <!-- Zakładki -->
             <div class="modal-body">
               <nav class="nav nav-tabs mb-3">
                 <button
@@ -43,14 +38,14 @@
 
               <Suspense>
                 <template #default>
-                  <component :is="tabComponent" :clientId="props.clientId" />
+                  <component :is="tabComponent" :clientId="props.clientId" :parent-name="clientDetailModal" />
                 </template>
                 <template #fallback>
                   <div class="text-muted">Ładowanie zakładki...</div>
                 </template>
               </Suspense>
-            </div>
 
+            </div>
             <div class="modal-footer">
               <button class="btn btn-secondary" @click="toggle('hide')">Zamknij</button>
             </div>
@@ -77,9 +72,9 @@ const visible = ref(false)
 const activeTab = ref('general')
 
 const componentsMap = {
-  general: defineAsyncComponent(() => import('./ClientGeneral.vue')),
-  contacts: defineAsyncComponent(() => import('./ContactCard.vue')),
-  addresses: defineAsyncComponent(() => import('./AddressCard.vue'))
+  general: defineAsyncComponent(() => import('./General/ClientGeneral.vue')),
+  contacts: defineAsyncComponent(() => import('./Contact/ContactCard.vue')),
+  addresses: defineAsyncComponent(() => import('./Address/AddressCard.vue'))
 }
 
 const tabs = [
@@ -94,7 +89,6 @@ function toggle(action) {
   visible.value = action === 'show'
 }
 
-// === Zamykanie ESC ===
 function onKeyDown(event) {
   if (event.key === 'Escape') {
     toggle('hide')
@@ -109,7 +103,6 @@ onUnmounted(() => {
   document.removeEventListener('keydown', onKeyDown)
 })
 
-// === DRAGGABLE ===
 const modal = ref(null)
 const modalStyle = ref({
   position: 'fixed',
@@ -155,7 +148,17 @@ function stopDrag() {
 </script>
 
 <style scoped>
-.cursor-move {
-  cursor: move;
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.modal {
+  pointer-events: auto;
+  z-index: 1050;
 }
 </style>

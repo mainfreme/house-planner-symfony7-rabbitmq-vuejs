@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Product\Domain\Repository;
 
-use App\Application\Shared\Dto\PaginatedResultDto;
+use App\Product\Application\Dto\ProductFilterDto;
 use App\Product\Domain\Entity\Product;
 use App\Product\Domain\Entity\ProductType;
+use App\Shared\Application\Dto\PaginatedResultDto;
+use App\Shared\Application\ValueObject\Sort;
 
 interface ProductRepositoryInterface
 {
@@ -24,5 +26,5 @@ interface ProductRepositoryInterface
 
     public function findMinMaxPrice(string $category, bool $active): array;
 
-    public function findByCriteria(array $criteria): PaginatedResultDto;
+    public function findByCriteria(ProductFilterDto $criteria, Sort $sort): PaginatedResultDto;
 }

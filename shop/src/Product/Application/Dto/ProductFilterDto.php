@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Product\Application\Dto;
 
 use App\Product\Application\Service\SlugGenerator;
+use App\Shared\Application\Dto\FilterDtoInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class ProductFilterDto
+final class ProductFilterDto implements FilterDtoInterface
 {
     #[Assert\NotBlank(message: 'Page cannot be blank.')]
     #[Assert\Positive(message: 'Page must be a positive number.')]
     #[Assert\Type(type: 'digit', message: 'Page must be numeric.')]
     private ?string $page = '1';
+    private ?string $limit = '10';
 
     #[Assert\Length(
         max: 255,
@@ -49,6 +51,24 @@ final class ProductFilterDto
     public function setPage(?string $page): void
     {
         $this->page = $page;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLimit(): ?string
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @param string|null $limit
+     * @return ProductFilterDto
+     */
+    public function setLimit(?string $limit): ProductFilterDto
+    {
+        $this->limit = $limit;
+        return $this;
     }
 
     /**

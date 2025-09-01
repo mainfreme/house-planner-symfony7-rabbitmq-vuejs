@@ -158,7 +158,7 @@ class ClientAddress
         return $this;
     }
 
-    public function isPrimary(): ?bool
+    public function getIsPrimary(): ?bool
     {
         return $this->is_primary;
     }

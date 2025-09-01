@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Client\Application\Service;
+namespace App\Shared\Application\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Csv\Exception;
@@ -37,8 +37,11 @@ class TransformService
     public function transformColumns(): self
     {
         foreach ($this->columnName as $column) {
+            $string = ucwords(str_replace(['-', '_'], ' ', strtolower($column)));
+            $string = lcfirst(str_replace(' ', '', $string));
+
             $this->columnsTransform[] = [
-                'key' => $column,
+                'key' => $string,
                 'label' => ucfirst(str_replace('_', ' ', $column))
             ];
         }

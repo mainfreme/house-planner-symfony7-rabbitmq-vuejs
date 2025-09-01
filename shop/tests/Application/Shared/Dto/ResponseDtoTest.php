@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Application\Shared\Dto;
 
-use App\Application\Shared\Dto\ResponseDto;
+use App\Shared\Application\Dto\ResponseDto;
 use PHPUnit\Framework\TestCase;
 
 class ResponseDtoTest extends TestCase

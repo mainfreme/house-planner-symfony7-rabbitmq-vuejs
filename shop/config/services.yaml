@@ -71,5 +71,11 @@ services:
         '@App\Client\Infrastructure\Persistence\Doctrine\ClientAddressRepository'
     App\Client\Domain\Repository\ClientRepositoryInterface:
         '@App\Client\Infrastructure\Persistence\Doctrine\ClientRepository'
-    App\Client\Domain\Repository\ContactRepositoryInterface:
-        '@App\Client\Infrastructure\Persistence\Doctrine\ContactRepository'
+    App\Client\Domain\Repository\ClientContactRepositoryInterface:
+        '@App\Client\Infrastructure\Persistence\Doctrine\ClientContactRepository'
+
+    App\Infrastructure\Helper\CacheHelper:
+        arguments:
+            $cache: '@Redis'
+            $serializer: '@serializer'
+            $ttl: 3600

@@ -34,7 +34,7 @@ class ApiProductTypeController extends AbstractController
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse(['items' => $productCategoryCollectionList->getArray()], Response::HTTP_OK);
+        return new JsonResponse($productCategoryCollectionList->toApiArray(), Response::HTTP_OK);
     }
 
     #[Route('/add', name: 'api_product_type_add', methods: 'POST')]

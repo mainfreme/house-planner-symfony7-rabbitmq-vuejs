@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Product\Infrastructure\Persistence\Doctrine;
 
-use App\Application\Shared\Dto\PaginatedResultDto;
 use App\Image\Domain\Entity\Image;
-use App\Product\Application\Dto\ProductDto;
+use App\Infrastructure\Persistence\Doctrine\Paginator\DoctrineDtoPaginator;
+use App\Product\Application\Dto\ProductArray;
+use App\Product\Application\Dto\ProductFilterDto;
 use App\Product\Domain\Entity\Product;
 use App\Product\Domain\Entity\ProductType;
 use App\Product\Domain\Repository\ProductRepositoryInterface;
-use App\Infrastructure\Persistence\Doctrine\Paginator\DoctrinePaginator;
+use App\Shared\Application\Dto\PaginatedResultDto;
+use App\Shared\Application\ValueObject\Sort;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -70,7 +72,7 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
         $this->entityManager->flush();
     }
 
-    public function findByCriteria(array $criteria): PaginatedResultDto
+    public function findByCriteria(ProductFilterDto $criteria, Sort $sort): PaginatedResultDto
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.type', 'pt')
@@ -78,38 +80,40 @@ class ProductRepository extends ServiceEntityRepository implements ProductReposi
             ->addSelect('i.data, i.property, i.uuid')
         ;
 
-        if (!empty($criteria['name'])) {
-            $qb->andWhere('p.name LIKE :name')
-                ->setParameter('name', '%' . $criteria['name'] . '%');
+        if (!empty($criteria->getName())) {
+            $qb->andWhere('p.name iLIKE :name')
+                ->setParameter('name', '%' . $criteria->getName() . '%');
         }
-        if (!empty($criteria['category'])) {
-            $qb
-                ->andWhere('pt.link = :product_type_link')
-                ->setParameter('product_type_link', strtolower($criteria['category']))
-            ;
-        }
+//        if (!empty($criteria['category'])) {
+//            if (!empty($criteria->getCategory())) {
 
-        if (!empty($criteria['priceMin'])) {
+//            $qb
+//                ->andWhere('pt.link = :product_type_link')
+//                ->setParameter('product_type_link', strtolower($criteria['category']))
+//            ;
+//        }
+
+        if (!empty($criteria->getPriceMin())) {
             $qb->andWhere('p.price >= :priceMin')
-                ->setParameter('priceMin', $criteria['priceMin']);
+                ->setParameter('priceMin', $criteria->getPriceMin());
         }
 
-        if (!empty($criteria['priceMax'])) {
+        if (!empty($criteria->getPriceMax())) {
             $qb->andWhere('p.price <= :priceMax')
-                ->setParameter('priceMax', $criteria['priceMax']);
+                ->setParameter('priceMax', $criteria->getPriceMax());
         }
 
-        if (!empty($criteria['isActive'])) {
+        if (!empty($criteria->getIsActive())) {
             $qb->andWhere('p.is_active = :active')
-                ->setParameter('active', $criteria['isActive']);
+                ->setParameter('active', $criteria->getIsActive());
         }
 
-        $page = $criteria['page'] ?? 1;
-        $limit = $criteria['limit'] ?? $this->params->has('app.pagination_limit')
+        $page = $criteria->getPage() ?? 1;
+        $limit = $criteria->getLimit() ?? $this->params->has('app.pagination_limit')
             ? (int) $this->params->get('app.pagination_limit')
             : 10;
 
-        return DoctrinePaginator::paginate($qb, ProductDto::class, (int)$page, (int)$limit);
+        return DoctrineDtoPaginator::paginate($qb, ProductArray::class, $sort, (int)$page, (int)$limit);
     }
 
     public function findMinMaxPrice(string $category = '', bool $active = true): array

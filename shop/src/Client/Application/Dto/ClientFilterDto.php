@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Client\Application\Dto;
 
+use App\Shared\Application\Dto\FilterDtoInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class ClientFilterDto
+final class ClientFilterDto implements FilterDtoInterface
 {
     #[Assert\NotBlank(message: 'Page cannot be blank.')]
     #[Assert\Positive(message: 'Page must be a positive number.')]
     #[Assert\Type(type: 'digit', message: 'Page must be numeric.')]
     private ?string $page = '1';
+    private ?string $limit = '10';
 
     #[Assert\Length(max: 255)]
     private ?string $name = null;
@@ -30,12 +32,12 @@ final class ClientFilterDto
     private ?string $email = null;
 
 //    #[Assert\Regex(pattern: '/^\d{6,15}$/', message: 'Numer telefonu powinien zawierać od 6 do 15 cyfr.')]
-    private ?int $phoneNumber = null;
+    private ?string $phoneNumber = null;
 
     #[Assert\Length(max: 255)]
     private ?string $country = null;
 
-    private ?string $is_delete = '';
+    private ?string $is_delete = null;
 
     /**
      * @return string|null
@@ -52,6 +54,24 @@ final class ClientFilterDto
     public function setPage(?string $page): ClientFilterDto
     {
         $this->page = $page;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLimit(): ?string
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @param string|null $limit
+     * @return ClientFilterDto
+     */
+    public function setLimit(?string $limit): ClientFilterDto
+    {
+        $this->limit = $limit;
         return $this;
     }
 
@@ -146,18 +166,18 @@ final class ClientFilterDto
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
 
     /**
-     * @param int|null $phoneNumber
+     * @param string|null $phoneNumber
      * @return ClientFilterDto
      */
-    public function setPhoneNumber(?int $phoneNumber): ClientFilterDto
+    public function setPhoneNumber(?string $phoneNumber): ClientFilterDto
     {
         $this->phoneNumber = $phoneNumber;
         return $this;

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\Application\Shared\Dto;
 
-use App\Application\Shared\Dto\PaginatedResultDto;
+use App\Shared\Application\Dto\PaginatedResultDto;
 use PHPUnit\Framework\TestCase;
 
 class PaginatedResultDtoTest extends TestCase

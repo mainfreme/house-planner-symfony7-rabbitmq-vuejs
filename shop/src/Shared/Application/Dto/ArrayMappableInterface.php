@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Shared\Dto;
+namespace App\Shared\Application\Dto;
 
-interface ArrayMappableDtoInterface
+interface ArrayMappableInterface
 {
     public static function fromArray(array $dto);
 }

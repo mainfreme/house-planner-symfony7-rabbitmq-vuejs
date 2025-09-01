@@ -7,11 +7,18 @@
       ⚙️ Konfiguruj kolumny
     </button>
   </slot>
+
   <teleport to="body">
-    <div class="modal fade" id="columnModal" tabindex="-1" aria-labelledby="columnModalLabel" aria-hidden="true" ref="columnModal">
+    <div
+        class="modal fade"
+        id="columnModal"
+        tabindex="-1"
+        aria-labelledby="columnModalLabel"
+        aria-hidden="true"
+        ref="columnModal"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
-          <SmallLoader :active="smallLoading" />
 
           <div class="modal-header">
             <h5 class="modal-title" id="columnModalLabel">Konfiguruj kolumny</h5>
@@ -19,7 +26,10 @@
           </div>
 
           <div class="modal-body">
-            <div v-for="col in allColumns" :key="col.key" class="form-check">
+            <div class="loader-wrapper" v-if="smallLoader">
+              <SmallLoader :active="smallLoader.value" :size="30"/>
+            </div>
+            <div v-if="!smallLoader.value" v-for="col in allColumns" :key="col.key" class="form-check">
               <input
                   class="form-check-input"
                   type="checkbox"
@@ -35,104 +45,121 @@
 
           <div class="modal-footer">
             <button class="btn btn-outline-danger" @click="resetColumns">Przywróć domyślne</button>
-            <button class="btn btn-outline-success" @click="toggleColumnConfig('hide')">Zapisz</button>
+            <button class="btn btn-outline-success" @click="toggleColumnConfig('hide')">
+              Zapisz
+            </button>
           </div>
+
         </div>
       </div>
     </div>
   </teleport>
 </template>
 
-<script>
-import SmallLoader from '@/component/SmallLoader';
-import { Modal } from 'bootstrap';
-import axios from 'axios';
+<script setup>
+import {ref, onMounted} from 'vue'
+import SmallLoader from '@/component/SmallLoader.vue'
+import {Modal} from 'bootstrap'
+import axios from 'axios'
 
-export default {
-  name: 'TableConfigColumns',
-  components: {
-    SmallLoader,
+const props = defineProps({
+  smallLoading: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    smallLoading: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      allColumns: [],
-      defVisibleColumn: ['id', 'name', 'nip', 'email'],
-      visibleColumnKeys: [],
-      columnModalInstance: null,
-    };
-  },
-  mounted() {
-    // Inicjalizacja modala
-    const modalEl = this.$refs.columnModal;
-    if (modalEl) {
-      this.columnModalInstance = new Modal(modalEl);
+  storeName: {
+    type: String,
+    default: 'client'
+  }
+})
+
+const emit = defineEmits(['update:columns'])
+
+const columnModal = ref(null)
+const columnModalInstance = ref(null)
+
+const localStorageName = ref('')
+const smallLoader = ref(false)
+const allColumns = ref([])
+const defVisibleColumn = ['id', 'name', 'nip', 'email']
+const visibleColumnKeys = ref([])
+
+onMounted(() => {
+  smallLoader.value = true
+
+  if (columnModal.value) {
+    columnModalInstance.value = new Modal(columnModal.value)
+  }
+
+  localStorageName.value = props.storeName + '_local_storage'
+
+  const saved = localStorage.getItem(localStorageName.value)
+  if (saved) {
+    try {
+      const objSave = JSON.parse(saved)
+      visibleColumnKeys.value = objSave.visibleKeys
+      setTimeout(() => (smallLoader.value = false), 3000)
+    } catch (e) {
+      console.warn('Nie udało się sparsować localStorage:', e)
+      resetColumns()
+    } finally {
+      smallLoader.value = false
+    }
+  } else {
+    resetColumns()
+  }
+  smallLoader.value = false
+})
+
+async function toggleColumnConfig(type = 'toggle') {
+  const storage = {
+    columns: allColumns.value,
+    visibleKeys: visibleColumnKeys.value
+  }
+
+  if (type === 'hide') {
+    localStorage.setItem(localStorageName.value, JSON.stringify(storage))
+    emit('update:columns', storage)
+    columnModalInstance.value?.hide()
+  } else if (type === 'show') {
+    columnModalInstance.value?.show()
+
+    if (allColumns.value.length === 0) {
+      await loadColumnsClients()
     }
 
-    // Wczytanie zapisanych kolumn
-    const saved = localStorage.getItem('client_visible_columns');
-    if (saved) {
-      try {
-        this.visibleColumnKeys = JSON.parse(saved);
-      } catch (e) {
-        console.warn('Nie udało się sparsować localStorage:', e);
-        this.resetColumns();
-      }
-    } else {
-      this.resetColumns();
-    }
-  },
-  methods: {
-    async toggleColumnConfig(type = 'toggle') {
-      this.smallLoading = true;
-      if (type === 'hide') {
-        localStorage.setItem('client_visible_columns', JSON.stringify(this.visibleColumnKeys));
-        this.$emit('update:columns', {
-          columns: this.allColumns,
-          visibleKeys: this.visibleColumnKeys
-        });
-        this.columnModalInstance?.hide();
-      } else if (type === 'show') {
-        this.columnModalInstance?.show();
+    emit('update:columns', storage)
+  } else {
+    columnModalInstance.value?.toggle()
+  }
+}
 
-        // Jeśli kolumny nie są jeszcze pobrane, pobierz je
-        if (this.allColumns.length === 0) {
-          await this.loadColumnsClients();
-        }
+function resetColumns() {
+  visibleColumnKeys.value = [...defVisibleColumn]
+  const storage = {
+    columns: allColumns.value,
+    visibleKeys: visibleColumnKeys.value
+  }
+  emit('update:columns', storage)
+}
 
-        // Emituj dane do rodzica (przydatne, gdyby chciał się zaktualizować od razu)
-        this.$emit('update:columns', {
-          columns: this.allColumns,
-          visibleKeys: this.visibleColumnKeys
-        });
-      } else {
-        this.columnModalInstance?.toggle();
-      }
-      this.smallLoading = false;
-    },
+async function loadColumnsClients() {
+  smallLoader.value = true
+  try {
+    const response = await axios.get(`/api/${props.storeName}/list-columns`)
+    allColumns.value = response.data
+  } catch (error) {
+    console.error('Błąd ładowania kolumn:', error)
 
-    resetColumns() {
-      this.visibleColumnKeys = [...this.defVisibleColumn];
-      this.$emit('update:columns', {
-        columns: this.allColumns,
-        visibleKeys: this.visibleColumnKeys
-      });
-    },
-
-    async loadColumnsClients() {
-      try {
-
-        const response = await axios.get('/api/client/list-columns');
-        this.allColumns = response.data;
-      } catch (error) {
-        console.error('Błąd ładowania kolumn:', error);
-      }
-    },
-  },
-};
+  } finally {
+    smallLoader.value = false
+  }
+}
 </script>
+<style>
+.loader-wrapper {
+  display: flex;
+  justify-content: center; /* wyśrodkuj poziomo */
+  padding: 30px 0; /* 30px od góry i dołu */
+}
+</style>

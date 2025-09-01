@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Client\Application\Dto;
+namespace App\Shared\Application\Dto;
 
-use App\Application\Shared\Dto\ArrayMappableDtoInterface;
-use App\Application\Shared\Dto\ResponseDtoInterface;
-
-class ColumnDto implements ResponseDtoInterface, ArrayMappableDtoInterface
+class ColumnArray implements ResponseDtoInterface, ArrayMappableInterface
 {
     public function __construct(
         public string $key,
@@ -27,6 +24,11 @@ class ColumnDto implements ResponseDtoInterface, ArrayMappableDtoInterface
     public function getArray(): array
     {
         return get_object_vars($this);
+    }
+
+    public function toApiArray(): array
+    {
+        // TODO: Implement toApiArray() method.
     }
 
     /**
@@ -64,6 +66,5 @@ class ColumnDto implements ResponseDtoInterface, ArrayMappableDtoInterface
         $this->label = $label;
         return $this;
     }
-
 
 }

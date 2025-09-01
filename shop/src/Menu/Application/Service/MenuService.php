@@ -107,8 +107,8 @@ class MenuService
                 'icon' => 'https://img.icons8.com/ios-filled/50/user.png',
                 'link' => '#',
                 'children' => [
+                    ['title' => 'Lista klientów', 'link' => '/client'],
                     ['title' => 'Lista użytkowników', 'link' => '/users'],
-                    ['title' => 'Dodaj użytkownika', 'link' => '/users/new'],
                 ]
             ],
             [

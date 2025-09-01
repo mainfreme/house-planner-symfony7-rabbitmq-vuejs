@@ -6,8 +6,10 @@ namespace App\Product\Application\UI\Http\Controller\Api;
 
 use App\Product\Application\Dto\PriceRangeDto;
 use App\Product\Application\Dto\ProductFilterDto;
+use App\Product\Application\Service\ProductService;
 use App\Product\Domain\Repository\ProductRepositoryInterface;
 
+use App\Shared\Application\Dto\SortDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +24,7 @@ class ApiProductController extends AbstractController
     public function __construct(
         private readonly ProductRepositoryInterface   $productRepository,
         private readonly SerializerInterface $serializer,
+        private readonly ProductService $productService,
     )
     {
     }
@@ -34,6 +37,11 @@ class ApiProductController extends AbstractController
             ProductFilterDto::class
         );
 
+        $sortDto = $this->serializer->denormalize(
+            $request->query->all(),
+            SortDto::class
+        );
+
         $errors = $validator->validate($filterDto);
         if (count($errors) > 0) {
             $errorMessages = [];
@@ -43,9 +51,15 @@ class ApiProductController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], 400);
         }
 
-        $products = $this->productRepository->findByCriteria($filterDto->toArray());
+        try {
+            $products = $this->productService->getProductList($filterDto, $sortDto);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
-        return new JsonResponse($products->getArray(),Response::HTTP_OK);
+        return new JsonResponse($products, Response::HTTP_OK);
+
+//        return new JsonResponse($products->getArray(),Response::HTTP_OK);
     }
 
     #[Route('/house-configurator/save', name: 'house-config-save', methods: 'POST')]

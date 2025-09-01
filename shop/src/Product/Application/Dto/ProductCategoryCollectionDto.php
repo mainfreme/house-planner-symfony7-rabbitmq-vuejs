@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Product\Application\Dto;
 
-use App\Application\Shared\Dto\ArrayMappableDtoInterface;
-use App\Application\Shared\Dto\ResponseDtoInterface;
+use App\Shared\Application\Dto\ResponseDtoInterface;
 
 class ProductCategoryCollectionDto implements ResponseDtoInterface
 {
@@ -48,5 +47,12 @@ class ProductCategoryCollectionDto implements ResponseDtoInterface
     public function getArray(): array
     {
         return array_map(fn(ProductTypeDto $dto) => $dto->getArray(), $this->items);
+    }
+
+    public function toApiArray(): array
+    {
+        return [
+          'data' => $this->getArray()
+        ];
     }
 }

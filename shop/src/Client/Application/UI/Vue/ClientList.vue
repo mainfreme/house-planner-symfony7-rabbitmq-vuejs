@@ -5,27 +5,29 @@
         <h2 class="h4 fw-bold mb-3">Lista klientów</h2>
 
         <div class="d-flex justify-content-end mb-2">
-          <button class="btn btn-outline-success btn-sm" @click="addClient">
-            Dodaj +
-          </button>
+          <button class="btn btn-outline-success btn-sm">dodaj +</button>
           <button class="btn btn-outline-primary btn-sm" @click="refreshList">
             Odśwież
           </button>
           <TableConfigColumns
               :smallLoading="false"
+              store-name="client"
               @update:columns="handleColumnChange"
           />
         </div>
-
       </div>
 
       <div class="col-md-2">
-        <ClientFilter :filters="filters" @update-filters="applyFilters"/>
+        <ClientFilter :filters="filters" @update-filters="applyFilters" />
       </div>
 
       <div class="col-md-10">
-        <div class="flex-grow-1 overflow-auto" ref="clientScrollContainer" @scroll="handleScroll">
-          <Loader v-if="loading"/>
+        <div
+            class="flex-grow-1 overflow-auto"
+            ref="clientScrollContainer"
+            @scroll="handleScroll"
+        >
+          <Loader v-if="loading" />
           <table class="table table-striped" style="max-width: 100%; display: table;">
             <thead class="table-light position-sticky top-0">
             <tr>
@@ -59,198 +61,234 @@
                     </button>
                   </template>
                 </ClientDetailModal>
-
-                <div v-if="!showForm">
-                  <button class="btn btn-sm btn-outline-primary me-1" @click="edit(client)">Edytuj</button>
-                  <button class="btn btn-sm btn-outline-danger" @click="openDeletePopup(client)">Usuń</button>
-                </div>
-                <div v-else>
-                  <button class="btn btn-sm btn-outline-success me-1" @click="updateChanges">Zapisz</button>
-                  <button class="btn btn-sm btn-outline-danger" @click="cancelEdit">Anuluj</button>
-                </div>
+                <button
+                    class="btn btn-sm btn-outline-danger"
+                    @click="openDeletePopup(client)"
+                >
+                  Usuń
+                </button>
               </td>
             </tr>
             </tbody>
           </table>
+
+          <section id="pagination">
+            <div
+                v-if="totalPages > 1"
+                class="d-flex justify-content-right align-items-right mt-4 gap-3"
+            >
+              <button
+                  class="btn btn-secondary"
+                  :disabled="page === 1"
+                  @click="changePage(page - 1)"
+              >
+                Poprzednia
+              </button>
+
+              <span class="fw-medium">Strona {{ page }} z {{ totalPages }}</span>
+
+              <button
+                  class="btn btn-secondary"
+                  :disabled="page === totalPages"
+                  @click="changePage(page + 1)"
+              >
+                Następna
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     </div>
 
-    <delete-popup
+    <DeletePopup
         :showModal="showModal"
-        :clientToDelete="clientToDelete"
+        :toDelete="toDelete"
         :error="deleteError"
         @close="closeDeletePopUp"
         @confirm-delete="deleteClient"
+        message="Czy na pewno chcesz usunąć klienta"
     />
   </div>
 </template>
 
-<script>
-import Loader from '@/component/Loader.vue';
-import DeletePopup from '@/component/deletePopup.vue';
-import TableConfigColumns from '@/component/TableConfigColumns.vue';
-import ClientDetailModal from './ClientDetailModal.vue';
-import ClientFilter from './ClientFilter.vue';
-import axios from 'axios';
+<script setup>
+import { ref, reactive, computed, onMounted, defineAsyncComponent} from "vue";
+import axios from "axios";
 
-export default {
-  name: 'ClientList',
-  components: {
-    ClientDetailModal,
-    Loader,
-    DeletePopup,
-    ClientFilter,
-    TableConfigColumns
-  },
-  data() {
-    return {
-      showForm: false,
-      clients: [],
-      showModal: false,
-      clientToDelete: null,
-      deleteError: '',
-      page: 1,
-      totalPages: 1,
-      loading: false,
-      sort: {
-        field: null,
-        order: 'asc'
-      },
-      filters: {
-        name: '',
-        nip: '',
-        regon: '',
-        pesel: '',
-        email: '',
-        number_phone: '',
-        phone_prefix: '',
-        country: ''
-      },
-      allColumns: [
-        {key: 'id', label: 'ID'},
-        {key: 'name', label: 'Nazwa'},
-        {key: 'email', label: 'Email'},
-        {key: 'nip', label: 'NIP'},
-      ],
-      visibleColumnKeys: ['id', 'name', 'email', 'nip'],
-    };
-  },
-  computed: {
-    visibleColumns() {
-      return this.allColumns.filter(col => this.visibleColumnKeys.includes(col.key));
+import Loader from "@/component/Loader.vue";
+import DeletePopup from "@/component/deletePopup.vue";
+import TableConfigColumns from "@/component/TableConfigColumns.vue";
+import ClientDetailModal from "./ClientDetailModal.vue";
+import ClientFilter from "./ClientFilter.vue";
+
+// lazy load
+const ClientGeneral = defineAsyncComponent(() =>
+    import("./General/ClientGeneral.vue")
+);
+
+const clients = ref([]);
+const clientMetaData = ref([]);
+const clientLinkData = ref([]);
+const showModal = ref(false);
+const toDelete = ref(null);
+const deleteError = ref("");
+const page = ref(1);
+const totalPages = ref(1);
+const loading = ref(false);
+
+const sort = reactive({
+  field: null,
+  order: "asc",
+});
+
+const filters = reactive({
+  name: "",
+  nip: "",
+  regon: "",
+  pesel: "",
+  email: "",
+  phoneNumber: "",
+  phonePrefix: "",
+  country: "",
+});
+
+const allColumns = ref([
+  { key: "id", label: "ID" },
+  { key: "name", label: "Nazwa" },
+  { key: "email", label: "Email" },
+  { key: "nip", label: "NIP" },
+]);
+const visibleColumnKeys = ref(["id", "name", "email", "nip"]);
+
+const clientScrollContainer = ref(null);
+
+const visibleColumns = computed(() =>
+    allColumns.value.filter((col) => visibleColumnKeys.value.includes(col.key))
+);
+
+const clearData = () => {
+  clients.value = [];
+  clientMetaData.value = [];
+  clientLinkData.value = [];
+  totalPages.value = 1;
+};
+
+const loadClients = async () => {
+  loading.value = true;
+  try {
+    const params = new URLSearchParams({
+      page: page.value,
+      sort: sort.field,
+      order: sort.order,
+      ...filters,
+    });
+    const response = await axios.get(`/api/client/list?${params.toString()}`);
+    const data = response.data;
+
+    clientMetaData.value = data.meta;
+    clientLinkData.value = data.links;
+
+    clients.value =
+        page.value === 1 ? data.data : [...clients.value, ...data.data];
+    totalPages.value = clientMetaData.value.total_item;
+  } catch (error) {
+    console.error("Błąd ładowania klientów:", error);
+    if (page.value === 1) {
+      clearData();
     }
-  },
-  mounted() {
-    this.loadClients();
-  },
-  methods: {
-    async loadClients() {
-      this.loading = true;
-      try {
-        const params = new URLSearchParams({
-          page: this.page,
-          sort: this.sort.field,
-          order: this.sort.order,
-          ...this.filters
-        });
-        const response = await axios.get(`/api/client/list?${params.toString()}`);
-        const data = response.data;
-        this.clients = this.page === 1 ? data.items : [...this.clients, ...data.items];
-        this.totalPages = data.pages;
-      } catch (error) {
-        console.error('Błąd ładowania klientów:', error);
-        if (this.page === 1) {
-          this.clients = [];
-          this.totalPages = 1;
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    refreshList() {
-      this.loadClients();
-    },
-    handleScroll() {
-      const container = this.$refs.clientScrollContainer;
-      if (!container || this.loading || this.page >= this.totalPages) return;
-      const threshold = 50;
-      if (container.scrollTop + container.clientHeight >= container.scrollHeight - threshold) {
-        this.page++;
-        this.loadClients();
-      }
-    },
-
-    addClient() {
-
-    },
-
-    /* usun */
-    edit(client) {
-      this.showForm = true;
-    },
-
-    cancelEdit() {
-      this.showForm = false;
-    },
-
-    updateChanges() {
-      // implementacja zapisu
-    },
-
-    openDeletePopup(client) {
-      this.deleteError = '';
-      this.clientToDelete = client;
-      this.showModal = true;
-    },
-    /* end - usun */
-    async deleteClient() {
-      this.deleteError = '';
-
-      try {
-        await axios.delete(`/api/client/${this.clientToDelete.id}`);
-        this.clients = this.clients.filter(c => c.id !== this.clientToDelete.id);
-        this.showModal = false;
-        this.clientToDelete = null;
-      } catch (error) {
-        this.deleteError = 'Nie udało się usunąć klienta. Spróbuj ponownie później.';
-
-        if (error.response && error.response.data && error.response.data.message) {
-          this.deleteError = error.response.data.message;
-        }
-      }
-    },
-
-    applyFilters(updatedFilters) {
-      this.filters = updatedFilters;
-      this.page = 1;
-      this.clients = [];
-      this.loadClients();
-    },
-
-    sortBy(field) {
-      if (this.sort.field === field) {
-        this.sort.order = this.sort.order === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sort.field = field;
-        this.sort.order = 'asc';
-      }
-      this.page = 1;
-      this.clients = [];
-      this.loadClients();
-    },
-
-    handleColumnChange({columns, visibleKeys}) {
-      this.allColumns = columns;
-      this.visibleColumnKeys = visibleKeys?.length ? visibleKeys : ['id', 'name', 'email', 'nip'];
-    },
-    closeDeletePopUp() {
-      this.showModal = false;
-      this.deleteError = '';
-    }
+  } finally {
+    loading.value = false;
   }
 };
+
+const refreshList = () => {
+  page.value = 1;
+  loadClients();
+};
+
+const handleScroll = () => {
+  const container = clientScrollContainer.value;
+  if (!container || loading.value || page.value >= totalPages.value) return;
+  const threshold = 50;
+  if (
+      container.scrollTop + container.clientHeight >=
+      container.scrollHeight - threshold
+  ) {
+    page.value++;
+    loadClients();
+  }
+};
+
+const applyFilters = (updatedFilters) => {
+  Object.assign(filters, updatedFilters);
+  page.value = 1;
+  clients.value = [];
+  loadClients();
+};
+
+const sortBy = (field) => {
+  if (sort.field === field) {
+    sort.order = sort.order === "asc" ? "desc" : "asc";
+  } else {
+    sort.field = field;
+    sort.order = "asc";
+  }
+  page.value = 1;
+  clients.value = [];
+  loadClients();
+};
+
+const handleColumnChange = ({ columns, visibleKeys }) => {
+  allColumns.value = columns;
+  visibleColumnKeys.value =
+      visibleKeys?.length > 0 ? visibleKeys : ["id", "name", "email", "nip"];
+};
+
+const openDeletePopup = (client) => {
+  deleteError.value = "";
+  toDelete.value = client;
+  showModal.value = true;
+};
+
+const deleteClient = async () => {
+  deleteError.value = "";
+  try {
+    await axios.delete(`/api/client/${toDelete.value.id}`);
+    clients.value = clients.value.filter((c) => c.id !== toDelete.value.id);
+    showModal.value = false;
+    toDelete.value = null;
+  } catch (error) {
+    deleteError.value =
+        error.response?.data?.message ||
+        "Nie udało się usunąć klienta. Spróbuj ponownie później.";
+  }
+};
+
+const closeDeletePopUp = () => {
+  showModal.value = false;
+  deleteError.value = "";
+};
+
+const changePage = (newPage) => {
+  page.value = newPage;
+  loadClients();
+};
+
+onMounted(() => {
+  const savedColumns = JSON.parse(
+      localStorage.getItem("client_local_storage")
+  );
+
+  if (savedColumns !== null) {
+    if (savedColumns.columns.length > 0) {
+      allColumns.value = savedColumns.columns;
+    }
+    if (savedColumns.visibleKeys.length > 0) {
+      visibleColumnKeys.value = savedColumns.visibleKeys;
+    }
+  }
+  loadClients();
+});
 </script>
 
 <style scoped>

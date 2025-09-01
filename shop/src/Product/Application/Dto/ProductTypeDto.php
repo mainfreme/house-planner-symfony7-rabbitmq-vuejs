@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Product\Application\Dto;
 
-use App\Application\Shared\Dto\ResponseDtoInterface;
-
-class ProductTypeDto implements ResponseDtoInterface
+class ProductTypeDto
 {
 
     private int $id;

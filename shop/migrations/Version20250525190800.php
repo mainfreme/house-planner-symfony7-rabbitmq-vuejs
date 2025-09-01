@@ -21,7 +21,7 @@ final class Version20250525190800 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            CREATE TABLE client (id SERIAL NOT NULL, name VARCHAR(255) NOT NULL, nip VARCHAR(255) NOT NULL, regon VARCHAR(255) DEFAULT NULL, pesel VARCHAR(255) DEFAULT NULL, email VARCHAR(255) DEFAULT NULL, number_phone INT DEFAULT NULL, country VARCHAR(255) NOT NULL, phone_prefix VARCHAR(5) NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE client (id SERIAL NOT NULL, name VARCHAR(255) NOT NULL, nip VARCHAR(255) NOT NULL, regon VARCHAR(255) DEFAULT NULL, pesel VARCHAR(255) DEFAULT NULL, email VARCHAR(255) DEFAULT NULL, number_phone varchar(15) DEFAULT NULL, country VARCHAR(255) NOT NULL, phone_prefix VARCHAR(5) NOT NULL, PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE client_address (id SERIAL NOT NULL, client_id INT NOT NULL, street VARCHAR(255) NOT NULL, postal_code VARCHAR(20) NOT NULL, city VARCHAR(100) NOT NULL, state_province VARCHAR(100) NOT NULL, country VARCHAR(100) NOT NULL, additional_info TEXT NOT NULL, house_number VARCHAR(10) NOT NULL, apartment_number VARCHAR(15) NOT NULL, is_primary BOOLEAN NOT NULL, added_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))

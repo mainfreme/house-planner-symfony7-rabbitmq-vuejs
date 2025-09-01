@@ -18,13 +18,24 @@
               {{ error }}
             </div>
             <p>
-              Czy na pewno chcesz usunąć klienta
-              <strong>{{ clientToDelete?.name }}</strong>?
+              {{ message }}
+              <strong>{{ toDelete?.name }}</strong>?
             </p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="$emit('close')">Anuluj</button>
-            <button type="button" class="btn btn-danger" @click="deleteObject" :disabled="smallLoading">
+            <button
+                type="button"
+                class="btn btn-secondary"
+                @click="$emit('close')"
+            >
+              Anuluj
+            </button>
+            <button
+                type="button"
+                class="btn btn-danger"
+                @click="deleteObject"
+                :disabled="smallLoading"
+            >
               <SmallLoader :active="smallLoading"/>
               Usuń
             </button>
@@ -49,9 +60,13 @@ export default {
       type: Boolean,
       required: true
     },
-    clientToDelete: {
+    toDelete: {
       type: Object,
       default: null
+    },
+    message: {
+      type: String,
+      default: 'Czy na pewno chcesz usunąć ?'
     },
     error: {
       type: String,

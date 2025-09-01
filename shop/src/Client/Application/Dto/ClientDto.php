@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace App\Client\Application\Dto;
 
-use App\Application\Shared\Dto\ArrayMappableDtoInterface;
-use App\Application\Shared\Dto\ResponseDtoInterface;
 use App\Client\Domain\Entity\Client;
+use App\Shared\Application\Dto\ArrayMappableInterface;
+use App\Shared\Application\Dto\ResponseDtoInterface;
 
-class ClientDto implements ResponseDtoInterface, ArrayMappableDtoInterface
+class ClientDto implements ResponseDtoInterface, ArrayMappableInterface
 {
 
     public function __construct(
-        public int     $id,
-        public string  $name,
+        public ?int    $id,
+        public ?string $name,
         public ?string $nip = null,
         public ?string $regon = null,
         public ?string $pesel = null,
         public ?string $email = null,
-        public ?int    $number_phone = null,
         public ?string $country = null,
-        public ?string $phone_prefix = null,
+        public ?string $phonePrefix = null,
+        public ?int    $phoneNumber = null,
+        public bool    $isCompany = false,
     )
     {
     }
@@ -28,6 +29,13 @@ class ClientDto implements ResponseDtoInterface, ArrayMappableDtoInterface
     public function getArray(): array
     {
         return get_object_vars($this);
+    }
+
+    public function toApiArray(): array
+    {
+        return [
+            'data' => $this->getArray(),
+        ];
     }
 
     public static function fromEntity(Client $client): self
@@ -39,181 +47,33 @@ class ClientDto implements ResponseDtoInterface, ArrayMappableDtoInterface
             regon: $client->getRegon(),
             pesel: $client->getPesel(),
             email: $client->getEmail(),
-            number_phone: $client->getNumberPhone(),
             country: $client->getCountry(),
-            phone_prefix: $client->getPhonePrefix(),
+            phonePrefix: $client->getPhonePrefix(),
+            phoneNumber: $client->getPhoneNumber(),
+            isCompany: $client->getIsCompany(),
         );
     }
 
     public static function fromArray(array $array): self
     {
         return new self(
-            id: $array['id'],
-            name: $array['name'],
+            id: (int)$array['id'],
+            name: (string)$array['name'],
+            nip: $array['nip'] ?? null,
+            regon: $array['regon'] ?? null,
+            pesel: $array['pesel'] ?? null,
+            email: $array['email'] ?? null,
+            country: $array['country'] ?? null,
+            phonePrefix: $array['phonePrefix'] ?? null,
+            phoneNumber: $array['phoneNumber'] ?? null,
+            isCompany: $array['isCompany'] ?? false,
         );
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function setPhoneNumber(?int $phoneNumber): void
     {
-        return $this->id;
+        $this->phoneNumber = $phoneNumber !== null
+            ? preg_replace('/\s+/', '', (string)$phoneNumber)
+            : null;
     }
-
-    /**
-     * @param int $id
-     * @return ClientDto
-     */
-    public function setId(int $id): ClientDto
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return ClientDto
-     */
-    public function setName(string $name): ClientDto
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getNip(): ?string
-    {
-        return $this->nip;
-    }
-
-    /**
-     * @param string|null $nip
-     * @return ClientDto
-     */
-    public function setNip(?string $nip): ClientDto
-    {
-        $this->nip = $nip;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getRegon(): ?string
-    {
-        return $this->regon;
-    }
-
-    /**
-     * @param string|null $regon
-     * @return ClientDto
-     */
-    public function setRegon(?string $regon): ClientDto
-    {
-        $this->regon = $regon;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPesel(): ?string
-    {
-        return $this->pesel;
-    }
-
-    /**
-     * @param string|null $pesel
-     * @return ClientDto
-     */
-    public function setPesel(?string $pesel): ClientDto
-    {
-        $this->pesel = $pesel;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string|null $email
-     * @return ClientDto
-     */
-    public function setEmail(?string $email): ClientDto
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getNumberPhone(): ?int
-    {
-        return $this->number_phone;
-    }
-
-    /**
-     * @param int|null $number_phone
-     * @return ClientDto
-     */
-    public function setNumberPhone(?int $number_phone): ClientDto
-    {
-        $this->number_phone = $number_phone;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string|null $country
-     * @return ClientDto
-     */
-    public function setCountry(?string $country): ClientDto
-    {
-        $this->country = $country;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPhonePrefix(): ?string
-    {
-        return $this->phone_prefix;
-    }
-
-    /**
-     * @param string|null $phone_prefix
-     * @return ClientDto
-     */
-    public function setPhonePrefix(?string $phone_prefix): ClientDto
-    {
-        $this->phone_prefix = $phone_prefix;
-        return $this;
-    }
-
-
 }

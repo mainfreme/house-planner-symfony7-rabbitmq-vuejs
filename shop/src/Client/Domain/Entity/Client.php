@@ -33,22 +33,25 @@ class Client
     private ?string $email = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $number_phone = null;
+    private ?int $phoneNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $country = null;
 
     #[ORM\Column(length: 5, nullable: true)]
-    private ?string $phone_prefix = null;
+    private ?string $phonePrefix = null;
 
     #[ORM\Column(type: 'boolean', nullable: true, options: ['default' => false])]
-    private ?bool $is_delete = null;
+    private ?bool $isDelete = null;
 
-    /**
-     * @var Collection<int, ClientAddress>
-     */
-    #[ORM\OneToMany(targetEntity: ClientAddress::class, mappedBy: 'client')]
-    private Collection $address;
+    #[ORM\Column(type: 'boolean', nullable: true, options: ['default' => false])]
+    private bool $isCompany = false;
+
+//    /**
+//     * @var Collection<int, ClientAddress>
+//     */
+//    #[ORM\OneToMany(targetEntity: ClientAddress::class, mappedBy: 'client')]
+//    private Collection $address;
 
     public function __construct()
     {
@@ -120,14 +123,14 @@ class Client
         return $this;
     }
 
-    public function getNumberPhone(): ?int
+    public function getPhoneNumber(): ?int
     {
-        return $this->number_phone;
+        return $this->phoneNumber;
     }
 
-    public function setNumberPhone(?int $number_phone): static
+    public function setPhoneNumber(?int $phoneNumber): static
     {
-        $this->number_phone = $number_phone;
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }
@@ -146,61 +149,72 @@ class Client
 
     public function getPhonePrefix(): ?string
     {
-        return $this->phone_prefix;
+        return $this->phonePrefix;
     }
 
-    public function setPhonePrefix(string $phone_prefix): static
+    public function setPhonePrefix(string $phonePrefix): static
     {
-        $this->phone_prefix = $phone_prefix;
+        $this->phonePrefix = $phonePrefix;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, ClientAddress>
-     */
-    public function getAddress(): Collection
-    {
-        return $this->address;
-    }
+//    /**
+//     * @return Collection<int, ClientAddress>
+//     */
+//    public function getAddress(): Collection
+//    {
+//        return $this->address;
+//    }
+//
+//    public function addAddress(ClientAddress $address): static
+//    {
+//        if (!$this->address->contains($address)) {
+//            $this->address->add($address);
+//            $address->setClient($this);
+//        }
+//
+//        return $this;
+//    }
 
-    public function addAddress(ClientAddress $address): static
-    {
-        if (!$this->address->contains($address)) {
-            $this->address->add($address);
-            $address->setClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAddress(ClientAddress $address): static
-    {
-        if ($this->address->removeElement($address)) {
-            // set the owning side to null (unless already changed)
-            if ($address->getClient() === $this) {
-                $address->setClient(null);
-            }
-        }
-
-        return $this;
-    }
+//    public function removeAddress(ClientAddress $address): static
+//    {
+//        if ($this->address->removeElement($address)) {
+//            // set the owning side to null (unless already changed)
+//            if ($address->getClient() === $this) {
+//                $address->setClient(null);
+//            }
+//        }
+//
+//        return $this;
+//    }
 
     /**
      * @return bool|null
      */
     public function getIsDelete(): ?bool
     {
-        return $this->is_delete;
+        return $this->isDelete;
     }
 
     /**
-     * @param bool|null $is_delete
+     * @param bool|null $isDelete
      * @return static
      */
-    public function setIsDelete(?bool $is_delete): static
+    public function setIsDelete(?bool $isDelete): static
     {
-        $this->is_delete = $is_delete;
+        $this->isDelete = $isDelete;
+        return $this;
+    }
+
+    public function getIsCompany(): bool
+    {
+        return $this->isCompany;
+    }
+
+    public function setIsCompany(bool $isCompany): Client
+    {
+        $this->isCompany = $isCompany;
         return $this;
     }
 

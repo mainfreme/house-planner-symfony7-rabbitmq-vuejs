@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Client\Domain\Entity;
 
-use App\Client\Infrastructure\Persistence\Doctrine\ContactRepository;
+use App\Client\Infrastructure\Persistence\Doctrine\ClientContactRepository;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 
-#[ORM\Entity(repositoryClass: ContactRepository::class)]
+#[ORM\Entity(repositoryClass: ClientContactRepository::class)]
 class Contact
 {
     #[ORM\Id]

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Paginator;
 
-use App\Application\Shared\Dto\ArrayMappableDtoInterface;
-use App\Application\Shared\Dto\PaginatedResultDto;
+use App\Shared\Application\Dto\ArrayMappableInterface;
+use App\Shared\Application\Dto\PaginatedResultDto;
+use App\Shared\Application\ValueObject\Sort;
 use Doctrine\ORM\QueryBuilder;
 
 final class DoctrineDtoPaginator
@@ -14,40 +15,25 @@ final class DoctrineDtoPaginator
     public static function paginate(
         QueryBuilder $qb,
         string $dtoClass,
+        Sort $sort,
         int $page = 1,
         int $limit = 10,
     ): PaginatedResultDto
     {
-        if (!is_subclass_of($dtoClass, ArrayMappableDtoInterface::class)) {
-            throw new \InvalidArgumentException("DTO class must implement ArrayMappableDtoInterface.");
-        }
+
+        $rootAliases = $qb->getRootAliases();
+        $alias = $rootAliases[0].'.';
 
         $countQb = clone $qb;
-        $result = $countQb
-            ->select('COUNT(DISTINCT ' . $qb->getRootAliases()[0] . '.id)')
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        $total = (int) ($result['1'] ?? 0);
+        $total = self::countTotalRow($countQb);
 
         $data = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
+            ->orderBy($alias.$sort->field(), $sort->direction())
             ->getQuery()
             ->getResult();
 
-
-        $items = array_map(function ($dto) use ($dtoClass) {
-            if (is_array($dto)) {
-                return $dtoClass::fromArray($dto);
-            }
-
-            if (is_object($dto)) {
-                return $dtoClass::fromEntity($dto);
-            }
-
-            throw new \InvalidArgumentException('Nieobsługiwany typ danych w paginatorze');
-
-        }, $data);
+        $items = self::packageToDto($data, $dtoClass);
 
 
         return new PaginatedResultDto(
@@ -57,5 +43,30 @@ final class DoctrineDtoPaginator
             pages: (int)ceil($total / $limit),
             items: $items,
         );
+    }
+
+    private static function packageToDto($data, string $dtoClass): array
+    {
+        if (!is_subclass_of($dtoClass, ArrayMappableInterface::class)) {
+            throw new \InvalidArgumentException("DTO class must implement ArrayMappableDtoInterface.");
+        }
+
+        return array_map(function (mixed $row) use ($dtoClass) {
+            return match (true) {
+                is_array($row) => $dtoClass::fromArray($row),
+                is_object($row) => $dtoClass::fromEntity($row),
+                default => throw new \InvalidArgumentException('Unsupported data type in '.self::class),
+            };
+        }, $data);
+    }
+
+    private static function countTotalRow(QueryBuilder $countQb): int
+    {
+        $result = $countQb
+            ->select('COUNT(DISTINCT ' . $countQb->getRootAliases()[0] . '.id) AS total')
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return (int) ($result['total'] ?? 0);
     }
 }

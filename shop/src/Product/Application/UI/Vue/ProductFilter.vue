@@ -189,7 +189,7 @@ export default {
         if (!response.ok) throw new Error('Błąd pobierania kategorii produktów')
 
         const data = await response.json()
-        this.categories = data.items
+        this.categories = data.data
 
         if (this.filters.category) {
             const match = this.categories.find(
