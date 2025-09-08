@@ -92,15 +92,33 @@ class ClientAddressRepository extends ServiceEntityRepository implements ClientA
                 ->setParameter('is_primary', $filterDto->getIsPrimary());
         }
 
-        if ($filterDto->getAddedAt()) {
+        if ($filterDto->getAddedFrom() && $filterDto->getAddedTo()) {
             try {
-                $addedAtDate = new \DateTimeImmutable($filterDto->getAddedAt());
+                $addedFromDate = new \DateTimeImmutable($filterDto->getAddedFrom());
+                $addedToDate = new \DateTimeImmutable($filterDto->getAddedTo());
+
                 $qb->andWhere('a.added_at >= :start_date AND a.added_at <= :end_date')
-                    ->setParameter('start_date', $addedAtDate->setTime(0, 0, 0))
-                    ->setParameter('end_date', $addedAtDate->setTime(23, 59, 59));
+                    ->setParameter('start_date', $addedFromDate->setTime(0, 0, 0))
+                    ->setParameter('end_date', $addedToDate->setTime(23, 59, 59));
 
             } catch (\Exception $e) {
                 // Opcjonalnie: obsłuż błąd, jeśli format daty w DTO jest nieprawidłowy
+            }
+        } elseif ($filterDto->getAddedFrom()) {
+            try {
+                $addedFromDate = new \DateTimeImmutable($filterDto->getAddedFrom());
+                $qb->andWhere('a.added_at >= :start_date')
+                    ->setParameter('start_date', $addedFromDate->setTime(0, 0, 0));
+            } catch (\Exception $e) {
+                // Obsłuż błąd formatu daty
+            }
+        } elseif ($filterDto->getAddedTo()) {
+            try {
+                $addedToDate = new \DateTimeImmutable($filterDto->getAddedTo());
+                $qb->andWhere('a.added_at <= :end_date')
+                    ->setParameter('end_date', $addedToDate->setTime(23, 59, 59));
+            } catch (\Exception $e) {
+                // Obsłuż błąd formatu daty
             }
         }
 

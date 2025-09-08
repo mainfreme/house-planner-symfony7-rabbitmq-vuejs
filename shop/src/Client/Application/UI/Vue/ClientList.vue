@@ -5,7 +5,7 @@
         <h2 class="h4 fw-bold mb-3">Lista klientów</h2>
 
         <div class="d-flex justify-content-end mb-2">
-          <button class="btn btn-outline-success btn-sm">dodaj +</button>
+          <button class="btn btn-outline-success btn-sm" @click="addClient">dodaj +</button>
           <button class="btn btn-outline-primary btn-sm" @click="refreshList">
             Odśwież
           </button>
@@ -289,6 +289,14 @@ onMounted(() => {
   }
   loadClients();
 });
+
+function addClient() {
+
+}
+
+async function saveClient() {
+
+}
 </script>
 
 <style scoped>

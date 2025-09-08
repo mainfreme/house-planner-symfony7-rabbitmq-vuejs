@@ -80,13 +80,23 @@
       </div>
 
       <div class="form-group">
-        <label for="added_at">Data dodania</label>
+        <label for="added_from">Data dodania od</label>
         <input
-            :value="filters.added_at"
-            @input="updateField('added_at', $event.target.value)"
-            @change="updateField('added_at', $event.target.value)"
+            :value="filters.added_from"
+            @input="updateField('added_from', $event.target.value)"
+            @change="updateField('added_from', $event.target.value)"
             type="date"
-            id="added_at"
+            id="added_from"
+        />
+      </div>
+      <div class="form-group">
+        <label for="added_to">Data dodania do</label>
+        <input
+            :value="filters.added_to"
+            @input="updateField('added_to', $event.target.value)"
+            @change="updateField('added_to', $event.target.value)"
+            type="date"
+            id="added_to"
         />
       </div>
 

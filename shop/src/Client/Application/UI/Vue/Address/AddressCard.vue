@@ -228,7 +228,8 @@ const filters = ref({
   city: "",
   state_province: "",
   country: "",
-  added_at: "",
+  added_from: "",
+  added_to: "",
 })
 
 const items = ref([])

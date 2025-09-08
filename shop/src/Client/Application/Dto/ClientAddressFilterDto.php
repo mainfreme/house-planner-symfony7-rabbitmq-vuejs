@@ -25,7 +25,8 @@ final class ClientAddressFilterDto implements FilterDtoInterface
     private ?string $house_number = null;
     private ?string $apartment_number = null;
     private ?bool $is_primary = null;
-    private ?string $added_at = null;
+    private ?string $added_from = null;
+    private ?string $added_to = null;
 
     public function getArray(): array
     {
@@ -226,20 +227,37 @@ final class ClientAddressFilterDto implements FilterDtoInterface
     /**
      * @return string|null
      */
-    public function getAddedAt(): ?string
+    public function getAddedFrom(): ?string
     {
-        return $this->added_at;
+        return $this->added_from;
     }
 
     /**
-     * @param string|null $added_at
+     * @param string|null $added_from
      * @return ClientAddressFilterDto
      */
-    public function setAddedAt(?string $added_at): ClientAddressFilterDto
+    public function setAddedFrom(?string $added_from): ClientAddressFilterDto
     {
-        $this->added_at = $added_at;
+        $this->added_from = $added_from;
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getAddedTo(): ?string
+    {
+        return $this->added_to;
+    }
+
+    /**
+     * @param string|null $added_to
+     * @return ClientAddressFilterDto
+     */
+    public function setAddedTo(?string $added_to): ClientAddressFilterDto
+    {
+        $this->added_to = $added_to;
+        return $this;
+    }
 
 }
