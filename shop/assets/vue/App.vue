@@ -2,7 +2,6 @@
 <template>
   <router-view />
   <div>
-    <h1>Witaj w Vue + Symfony!</h1>
   </div>
 </template>
 

@@ -176,7 +176,7 @@
       :error="deleteError"
       @close="closeDeletePopUp"
       @confirm-delete="deleteClient"
-      :message="'Czy napewno chcesz usunąć adress'"
+      :message="'Czy na pewno chcesz usunąć adres ?'"
   />
 </template>
 
@@ -251,7 +251,6 @@ const resendStatus = reactive({})
 const emit = defineEmits(['add-address'])
 
 watch(filters, (newFilters) => {
-  console.log("Filtry zmieniły się:", newFilters);
   loadClientAddress();
 }, {
   deep: true
@@ -295,7 +294,7 @@ function formatUtcDate(dateObj) {
 }
 
 function addNew() {
-  filtersOpen.value = !filtersOpen.value
+  filtersOpen.value = false;
   showNewRow.value = true
 }
 

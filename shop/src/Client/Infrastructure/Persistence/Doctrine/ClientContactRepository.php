@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Client\Infrastructure\Persistence\Doctrine;
 
-use App\Client\Application\Dto\ClientContactArray;
+use App\Client\Application\Dto\ClientContactDto;
+use App\Client\Application\Dto\ClientContactFilterDto;
 use App\Client\Domain\Entity\Contact;
 use App\Client\Domain\Repository\ClientContactRepositoryInterface;
 use App\Infrastructure\Persistence\Doctrine\Paginator\DoctrineDtoPaginator;
 use App\Shared\Application\Dto\PaginatedResultDto;
+use App\Shared\Application\ValueObject\Sort;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 
 /**
@@ -22,19 +25,19 @@ class ClientContactRepository extends ServiceEntityRepository implements ClientC
 {
     public function __construct(
         private readonly ParameterBagInterface $params,
-        ManagerRegistry $registry,
-        private EntityManagerInterface $entityManager,
-//        private LoggerInterface $logger
+        ManagerRegistry                        $registry,
+        private EntityManagerInterface         $entityManager,
+        private PropertyAccessorInterface      $accessor,
     )
     {
         parent::__construct($registry, Contact::class);
     }
 
-    public function findById(int $id): ?ClientContactArray
+    public function findById(int $id): ?ClientContactDto
     {
         $client = $this->entityManager->find(Contact::class, $id);
 
-        return ClientContactArray::fromEntity($client);
+        return ClientContactDto::fromEntity($client);
     }
 
     public function findByClientId(int $clientId): PaginatedResultDto
@@ -44,61 +47,96 @@ class ClientContactRepository extends ServiceEntityRepository implements ClientC
             ->setParameter('client_id', $clientId);
 
 
+        return DoctrineDtoPaginator::paginate($client, ClientContactDto::class);
+    }
 
-        return DoctrineDtoPaginator::paginate($client, ClientContactArray::class);
+    public function findByCriteria(ClientContactFilterDto $criteria, Sort $sort): PaginatedResultDto
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        if (!empty($criteria->getName())) {
+            $qb->andWhere('LOWER(p.name) LIKE LOWER(:name)')
+                ->setParameter('name', '%' . $criteria->getName() . '%');
+        }
+        if (!empty($criteria->getSurname())) {
+            $qb->andWhere('LOWER(p.surname) LIKE LOWER(:surname)')
+                ->setParameter('surname', '%' . $criteria->getSurname() . '%');
+        }
+        if (!empty($criteria->getEmail())) {
+            $qb->andWhere('LOWER(p.email) LIKE LOWER(:email)')
+                ->setParameter('email', '%' . $criteria->getEmail() . '%');
+        }
+        if (!empty($criteria->getPhoneNumber())) {
+            $qb->andWhere('LOWER(p.phoneNumber) LIKE LOWER(:phoneNumber)')
+                ->setParameter('phoneNumber', '%' . $criteria->getPhoneNumber() . '%');
+        }
+        if (!empty($criteria->getCountry())) {
+            $qb->andWhere('LOWER(p.country) LIKE LOWER(:country)')
+                ->setParameter('country', '%' . $criteria->getCountry() . '%');
+        }
+
+        if (!empty($criteria->getLanguage())) {
+            $qb->andWhere('LOWER(p.language) LIKE LOWER(:language)')
+                ->setParameter('language', '%' . $criteria->getLanguage() . '%');
+        }
+
+        if (!empty($criteria->getPostalCode())) {
+            $qb->andWhere('p.areaCode = :areaCode')
+                ->setParameter('areaCode', $criteria->getPostalCode());
+        }
+
+        return DoctrineDtoPaginator::paginate($qb, ClientContactDto::class, $sort);
+    }
+
+    public function update(ClientContactDto $clientDto): Contact
+    {
+        $clientContact = $this->entityManager->find(Contact::class, $clientDto->id);
+
+        foreach (get_object_vars($clientDto) as $property => $value) {
+            if ($value !== null and $property !== 'id') {
+                $this->accessor->setValue($clientContact, $property, $value);
+            }
+        }
+
+        $this->entityManager->persist($clientContact);
+        $this->entityManager->flush();
+
+        return $clientContact;
     }
 
     public function remove(Contact $contactClient): bool
     {
-        return true;
-    }
-
-    public function save(Contact $contactClient): bool
-    {
+        try {
+        $contactClient->setDeleteAt(new Carbon());
         $this->entityManager->persist($contactClient);
         $this->entityManager->flush();
+        } catch (\Exception $e) {
+            throw new \DataBaseException(sprintf('Nie udało się usunąć klienta %s', $contactClient->getName() .' '.$contactClient->getSurname()));
+        }
     }
 
-    public function findByCriteria(array $criteria): PaginatedResultDto
+    public function save(ClientContactDto $contactClient): Contact
     {
-        $qb = $this->createQueryBuilder('p');
-
-        if (!empty($criteria['name'])) {
-            $qb->andWhere('p.name LIKE :name')
-                ->setParameter('name', '%' . $criteria['name'] . '%');
-        }
-        if (!empty($criteria['surname'])) {
-            $qb->andWhere('p.surname LIKE :surname')
-                ->setParameter('surname', '%' .$criteria['surname'] . '%');
-        }
-        if (!empty($criteria['email'])) {
-            $qb->andWhere('p.email LIKE :email')
-                ->setParameter('email', '%' .$criteria['email'] . '%');
-        }
-        if (!empty($criteria['phoneNumber'])) {
-            $qb->andWhere('p.phoneNumber LIKE :phoneNumber')
-                ->setParameter('phoneNumber', '%' .$criteria['phoneNumber'] . '%');
-        }
-        if (!empty($criteria['country'])) {
-            $qb->andWhere('p.country LIKE :country')
-                ->setParameter('country', '%' .$criteria['country'] . '%');
+        $contact = $contactClient->id
+            ? $this->find($contactClient->id)
+            : new Contact();
+        if (!$contact) {
+            throw new \RuntimeException('Contact not found');
         }
 
-        if (!empty($criteria['language'])) {
-            $qb->andWhere('p.language LIKE :language')
-                ->setParameter('language', '%' .$criteria['language'] . '%');
-        }
+        $contact->setName($contactClient->name);
+        $contact->setSurname($contactClient->surname);
+        $contact->setEmail($contactClient->email);
+        $contact->setPhoneNumber($contactClient->phoneNumber);
+        $contact->setCountry($contactClient->country);
+        $contact->setLanguage($contactClient->language);
+        $contact->setAreaCode($contactClient->areaCode);
+        $contact->setAddedAt($contactClient->added_at);
+        $contact->setNote($contactClient->note);
 
-        if (!empty($criteria['areaCode'])) {
-            $qb->andWhere('p.areaCode = :areaCode')
-                ->setParameter('areaCode', $criteria['areaCode']);
-        }
+        $this->entityManager->persist($contact);
+        $this->entityManager->flush();
 
-        $page = $criteria['page'] ?? 1;
-        $limit = $criteria['limit'] ?? $this->params->has('app.pagination_limit')
-            ? (int) $this->params->get('app.pagination_limit')
-            : 10;
-
-        return DoctrineDtoPaginator::paginate($qb, ClientContactArray::class, (int)$page, (int)$limit);
+        return $contact;
     }
 }

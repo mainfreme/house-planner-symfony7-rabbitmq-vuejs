@@ -5,7 +5,12 @@
         <h2 class="h4 fw-bold mb-3">Lista klientów</h2>
 
         <div class="d-flex justify-content-end mb-2">
-          <button class="btn btn-outline-success btn-sm" @click="addClient">dodaj +</button>
+          <div class="btn-group">
+            <button class="btn btn-outline-success btn-sm" @click="addClient">Dodaj +</button>
+            <button class="btn btn-outline-success btn-sm" @click="addUpload">Wgraj</button>
+          </div>
+
+
           <button class="btn btn-outline-primary btn-sm" @click="refreshList">
             Odśwież
           </button>
@@ -17,8 +22,9 @@
         </div>
       </div>
 
+
       <div class="col-md-2">
-        <ClientFilter :filters="filters" @update-filters="applyFilters" />
+        <ClientFilter :filters="filters" @update-filters="applyFilters"/>
       </div>
 
       <div class="col-md-10">
@@ -27,7 +33,7 @@
             ref="clientScrollContainer"
             @scroll="handleScroll"
         >
-          <Loader v-if="loading" />
+          <Loader v-if="loading"/>
           <table class="table table-striped" style="max-width: 100%; display: table;">
             <thead class="table-light position-sticky top-0">
             <tr>
@@ -108,11 +114,25 @@
         @confirm-delete="deleteClient"
         message="Czy na pewno chcesz usunąć klienta"
     />
+
+    <div class="modal fade" id="clientWizardModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Dodawanie klienta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ClientWizard/>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, defineAsyncComponent} from "vue";
+import {ref, reactive, computed, onMounted, defineAsyncComponent} from "vue";
 import axios from "axios";
 
 import Loader from "@/component/Loader.vue";
@@ -120,6 +140,10 @@ import DeletePopup from "@/component/deletePopup.vue";
 import TableConfigColumns from "@/component/TableConfigColumns.vue";
 import ClientDetailModal from "./ClientDetailModal.vue";
 import ClientFilter from "./ClientFilter.vue";
+import ClientWizard from "./ClientWizard.vue";
+
+
+let modalInstance = null;
 
 // lazy load
 const ClientGeneral = defineAsyncComponent(() =>
@@ -153,10 +177,10 @@ const filters = reactive({
 });
 
 const allColumns = ref([
-  { key: "id", label: "ID" },
-  { key: "name", label: "Nazwa" },
-  { key: "email", label: "Email" },
-  { key: "nip", label: "NIP" },
+  {key: "id", label: "ID"},
+  {key: "name", label: "Nazwa"},
+  {key: "email", label: "Email"},
+  {key: "nip", label: "NIP"},
 ]);
 const visibleColumnKeys = ref(["id", "name", "email", "nip"]);
 
@@ -238,7 +262,7 @@ const sortBy = (field) => {
   loadClients();
 };
 
-const handleColumnChange = ({ columns, visibleKeys }) => {
+const handleColumnChange = ({columns, visibleKeys}) => {
   allColumns.value = columns;
   visibleColumnKeys.value =
       visibleKeys?.length > 0 ? visibleKeys : ["id", "name", "email", "nip"];
@@ -275,6 +299,14 @@ const changePage = (newPage) => {
 };
 
 onMounted(() => {
+  const modalEl = document.getElementById("clientWizardModal");
+  if (modalEl) {
+    // bootstrap.Modal z bundle
+    modalInstance = new bootstrap.Modal(modalEl, {
+      backdrop: "static",
+    });
+  }
+
   const savedColumns = JSON.parse(
       localStorage.getItem("client_local_storage")
   );
@@ -291,7 +323,13 @@ onMounted(() => {
 });
 
 function addClient() {
+  if (modalInstance) {
+    modalInstance.show();
+  }
+}
 
+function addUpload() {
+  alert('test uploadu');
 }
 
 async function saveClient() {

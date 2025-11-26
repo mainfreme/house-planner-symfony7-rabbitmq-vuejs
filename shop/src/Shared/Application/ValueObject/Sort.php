@@ -13,11 +13,17 @@ class Sort
     public function __construct(
         private ?string $field,
         private ?string $direction,
-        ColumnCollectionDto $allowedColumnCollectionDto
-    )
-    {
-        $this->field = in_array($field, $allowedColumnCollectionDto->toArray(), true) ? $field : 'id';
-        $this->direction = in_array(strtoupper($direction), self::DIRECTION, true) ? strtoupper($direction) : 'ASC';
+        ?ColumnCollectionDto $allowedColumnCollectionDto = null
+    ) {
+        $allowedColumns = $allowedColumnCollectionDto?->toArray() ?? [];
+
+        $this->field = $field && in_array($field, $allowedColumns, true)
+            ? $field
+            : 'id';
+
+        $this->direction = $direction && in_array(strtoupper($direction), self::DIRECTION, true)
+            ? strtoupper($direction)
+            : 'ASC';
     }
 
     public function field(): string

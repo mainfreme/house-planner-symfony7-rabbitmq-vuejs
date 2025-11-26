@@ -13,22 +13,16 @@
     <div class="d-flex flex-row gap-4">
       <!-- Panel filtrów -->
       <aside
-          :class="['', showFilter ? 'expanded-filter' : 'collapsed-filter']"
+          :class="[showFilter ? 'expanded-filter' : 'collapsed-filter']"
           @click="!showFilter && toggleFilter()"
           style="transition: width 0.3s ease; overflow: hidden;"
       >
-        <div @click="!showFilter && toggleFilter()">
-          <template v-show="!showFilter">
-            <div
-                class="vertical-text d-flex justify-content-center align-items-center h-20"
-                style="width: 20px;"
-                title="Pokaż filtry"
-            >
-              Pokaż Filtry
-            </div>
-          </template>
+        <!-- Gdy schowany -->
+        <div v-show="!showFilter" class="vertical-text d-flex justify-content-center align-items-center h-20" style="width: 20px;" title="Pokaż filtry">
+          Pokaż Filtry
         </div>
 
+        <!-- Gdy widoczny -->
         <div v-show="showFilter">
           <ProductFilter
               :category="category"
@@ -50,7 +44,7 @@
           :style="{ flex: showFilter ? '1 1 calc(100% - 300px)' : '1 1 100%' }"
           class="pe-3"
       >
-        <Loader v-if="loading"/>
+        <Loader v-if="loading" />
 
         <div v-else>
           <div v-if="products.length === 0" class="alert alert-info text-center">
@@ -77,26 +71,24 @@
                 <!-- Serduszko -->
                 <button
                     class="btn position-absolute"
-                    :class="hoveredWishlist === product.id ? ' btn-outline-success ' : '  btn-success '"
+                    :class="hoveredWishlist === product.id ? 'btn-outline-success' : 'btn-success'"
                     style="top: 2px; right: 2px;"
                     @mouseenter="hoveredWishlist = product.id"
                     @mouseleave="hoveredWishlist = null"
                 >
-                  <SmallLoader :active="smallLoading"/>
+                  <SmallLoader :active="smallLoading" />
                   <i
                       class="fa-heart"
                       :class="hoveredWishlist === product.id ? 'fa-regular' : 'fa-solid'"
                       style="color: black;"
-                  ></i>
+                  />
                 </button>
 
                 <!-- Koszyk -->
                 <button
-                    class="btn  position-absolute"
+                    class="btn position-absolute"
                     :class="hoveredCart === product.id ? 'btn-outline-primary' : 'btn-primary'"
                     style="bottom: 2px; right: 2px;"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
                     title="Dodaj do koszyka"
                     @mouseenter="hoveredCart = product.id"
                     @mouseleave="hoveredCart = null"
@@ -105,14 +97,13 @@
                       class="fa-solid fa-cart-shopping"
                       :class="{ 'text-light': hoveredCart === product.id, 'text-dark': hoveredCart !== product.id }"
                       style="color: black;"
-                  ></i>
+                  />
                 </button>
-
               </div>
             </div>
           </div>
 
-
+          <!-- Paginacja -->
           <section id="pagination">
             <div
                 v-if="totalPages > 1"
@@ -127,8 +118,8 @@
               </button>
 
               <span class="fw-medium">
-              Strona {{ page }} z {{ totalPages }}
-            </span>
+                Strona {{ page }} z {{ totalPages }}
+              </span>
 
               <button
                   class="btn btn-secondary"
@@ -145,115 +136,99 @@
   </section>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue';
 import Loader from '@/component/Loader.vue';
-
+import SmallLoader from '@/component/SmallLoader.vue';
 import ProductFilter from './ProductFilter.vue';
-import SmallLoader from '@/component/SmallLoader';
-import {ref} from "vue";
 
-export default {
-  name: 'ProductList',
-  components: {
-    Loader,
-    SmallLoader,
-    ProductFilter,
+const props = defineProps({
+  category: {
+    type: String,
+    default: '',
   },
-  props: {
-    category: {
-      type: String,
-      default: '',
-    },
-  },
-  data() {
-    return {
-      showFilter: true,
-      products: [],
-      page: 1,
-      totalPages: 1,
-      loading: false,
-      activeFilters: {},
-      smallLoading: false,
-    };
-  },
-  created() {
-    // this.activeFilters.append('category', this.category);
-  },
-  mounted() {
-    // this.loadProducts();
-  },
-  watch: {
-    // categorySelected(newCategory) {
-    //   this.category = newCategory;
-    //   this.page = 1;
-    //
-    //   this.loadProducts();
-    // },
-  },
-  methods: {
-    toggleFilter() {
-      this.showFilter = !this.showFilter
-    },
-    async loadProducts() {
-      this.products = [];
-      this.totalPages = 0;
+});
 
-      this.loading = true;
-      try {
-        const params = new URLSearchParams({
-          page: this.page,
-        });
+const showFilter = ref(true);
+const products = ref([]);
+const page = ref(1);
+const totalPages = ref(1);
+const loading = ref(false);
+const activeFilters = ref({});
+const smallLoading = ref(false);
 
-        if (this.category) {
-          // params.append('category', this.category);
-        }
+const hoveredWishlist = ref(null);
+const hoveredCart = ref(null);
 
-        for (const key in this.activeFilters) {
-          const value = this.activeFilters[key];
-          if (key === 'category' && typeof value === 'object' && value !== null) {
-            // Wyślij kategorię jako dwa osobne parametry
-            params.append('category', value.name || '');
-            params.append('category_id', parseInt(value.id) || null);
-          } else if (value !== null && value !== undefined) {
-            params.append(key, value);
-          }
-        }
-
-        const response = await fetch(`/api/product/list?${params.toString()}`);
-        if (!response.ok) throw new Error('Błąd serwera');
-
-        const data = await response.json();
-        this.products = data.items;
-        this.totalPages = data.pages;
-
-      } catch (error) {
-        console.error('Błąd ładowania produktów:', error);
-        this.products = [];
-        this.totalPages = 1;
-      } finally {
-        this.loading = false;
-      }
-    },
-    changePage(newPage) {
-      if (newPage >= 1 && newPage <= this.totalPages) {
-        this.page = newPage;
-        this.loadProducts();
-      }
-    },
-    async updateFilters(filters) {
-      try {
-        this.activeFilters = filters;
-        this.page = 1;
-        this.smallLoading = true;
-        await this.loadProducts();
-      } catch (e) {
-        console.error(e);
-      } finally {
-        this.smallLoading = false;
-      }
-    },
-  },
+const toggleFilter = () => {
+  showFilter.value = !showFilter.value;
 };
+
+const loadProducts = async () => {
+  products.value = [];
+  totalPages.value = 0;
+  loading.value = true;
+
+  try {
+    const params = new URLSearchParams({ page: page.value });
+
+    if (props.category) {
+      params.append('category', props.category);
+    }
+
+    for (const key in activeFilters.value) {
+      const value = activeFilters.value[key];
+      if (key === 'category' && typeof value === 'object' && value !== null) {
+        params.append('category', value.name || '');
+        params.append('category_id', parseInt(value.id) || null);
+      } else if (value !== null && value !== undefined) {
+        params.append(key, value);
+      }
+    }
+
+    const response = await fetch(`/api/product/list?${params.toString()}`);
+    if (!response.ok) throw new Error('Błąd serwera');
+
+    const data = await response.json();
+    products.value = data.items;
+    totalPages.value = data.pages || 1;
+  } catch (error) {
+    console.error('Błąd ładowania produktów:', error);
+    products.value = [];
+    totalPages.value = 1;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const changePage = (newPage) => {
+  if (newPage >= 1 && newPage <= totalPages.value) {
+    page.value = newPage;
+    loadProducts();
+  }
+};
+
+const updateFilters = async (filters) => {
+  activeFilters.value = filters;
+  page.value = 1;
+  smallLoading.value = true;
+  try {
+    await loadProducts();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    smallLoading.value = false;
+  }
+};
+
+watch(
+    () => props.category,
+    () => {
+      page.value = 1;
+      loadProducts();
+    },
+    { immediate: true }
+);
 </script>
 
 <style scoped>
@@ -274,11 +249,11 @@ export default {
 }
 
 .vertical-text {
-  writing-mode: vertical-rl; /* Tekst pionowo od dołu do góry */
-  transform: rotate(180deg); /* Obróć, żeby czytać od góry do dołu */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
   font-size: 12px;
   font-weight: 600;
-  color: #6c757d; /* szary bootstrapowy */
-  user-select: none; /* Nie zaznaczaj tekstu */
+  color: #6c757d;
+  user-select: none;
 }
 </style>

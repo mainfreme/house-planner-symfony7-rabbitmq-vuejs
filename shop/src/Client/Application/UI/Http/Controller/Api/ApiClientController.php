@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Client\Application\UI\Http\Controller\Api;
 
 use App\Client\Application\Dto\ClientDto;
@@ -7,6 +9,7 @@ use App\Client\Application\Dto\ClientFilterDto;
 use App\Client\Application\Service\ClientService;
 use App\Client\Domain\Repository\ClientRepositoryInterface;
 use App\Shared\Application\Dto\SortDto;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 #[Route('/api/client', name: 'api_client')]
 class ApiClientController extends AbstractController
@@ -75,10 +79,22 @@ class ApiClientController extends AbstractController
     }
 
     #[Route('/add', name: 'add-client', methods: ['POST'])]
-    public function add(): JsonResponse
+    public function add(Request $request): JsonResponse
     {
+        $clientDto = $this->serializer->denormalize(
+            $request->toArray(),
+            ClientDto::class
+        );
 
-        return new JsonResponse(['message'=> ':P'], Response::HTTP_FORBIDDEN);
+        try {
+            $updateObject = $this->clientService->save($clientDto);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        }
+
+        $clientDto = ClientDto::fromEntity($updateObject);
+
+        return new JsonResponse($clientDto->toApiArray(), Response::HTTP_OK);
     }
 
 
@@ -119,4 +135,19 @@ class ApiClientController extends AbstractController
         return new JsonResponse(['message' => 'Nie udało się usunięto klienta'], Response::HTTP_NOT_FOUND);
     }
 
+
+    #[Route('/import', name: 'api_clients_import')]
+    public function importClients(GetFakturowniaClientsHandler $handler): JsonResponse
+    {
+        $query = new GetFakturowniaClientsQuery(page: 1, perPage: 25);
+
+        /** @var \App\Domain\Client\Entity\Client[] $clients */
+        $clients = $handler($query);
+
+        // Zwrócenie danych lub przekazanie do kolejnego Handlera/Serwisu, który zapisze je do DB
+        return $this->json([
+            'message' => 'Liczba zaimportowanych klientów: ' . count($clients),
+            'clients' => $clients
+        ]);
+    }
 }

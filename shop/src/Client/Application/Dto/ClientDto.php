@@ -20,7 +20,7 @@ class ClientDto implements ResponseDtoInterface, ArrayMappableInterface
         public ?string $email = null,
         public ?string $country = null,
         public ?string $phonePrefix = null,
-        public ?int    $phoneNumber = null,
+        public ?string $phoneNumber = null,
         public bool    $isCompany = false,
     )
     {
@@ -48,8 +48,8 @@ class ClientDto implements ResponseDtoInterface, ArrayMappableInterface
             pesel: $client->getPesel(),
             email: $client->getEmail(),
             country: $client->getCountry(),
-            phonePrefix: $client->getPhonePrefix(),
-            phoneNumber: $client->getPhoneNumber(),
+            phonePrefix: (string)$client->getPhonePrefix(),
+            phoneNumber: (string)$client->getPhoneNumber(),
             isCompany: $client->getIsCompany(),
         );
     }
@@ -64,13 +64,13 @@ class ClientDto implements ResponseDtoInterface, ArrayMappableInterface
             pesel: $array['pesel'] ?? null,
             email: $array['email'] ?? null,
             country: $array['country'] ?? null,
-            phonePrefix: $array['phonePrefix'] ?? null,
-            phoneNumber: $array['phoneNumber'] ?? null,
+            phonePrefix: (string)$array['phonePrefix'] ?? null,
+            phoneNumber: (string)$array['phoneNumber'] ?? null,
             isCompany: $array['isCompany'] ?? false,
         );
     }
 
-    public function setPhoneNumber(?int $phoneNumber): void
+    public function setPhoneNumber(?string $phoneNumber): void
     {
         $this->phoneNumber = $phoneNumber !== null
             ? preg_replace('/\s+/', '', (string)$phoneNumber)

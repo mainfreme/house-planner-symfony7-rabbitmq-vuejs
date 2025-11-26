@@ -21,7 +21,7 @@
           <!-- Kategoria produktu -->
           <div class="mb-3">
             <label for="filter-type" class="form-label">Kategoria</label>
-            <multiselect
+            <Multiselect
                 v-model="filters.category"
                 :options="categories"
                 :multiple="false"
@@ -51,9 +51,8 @@
               />
             </div>
           </div>
-          <div class="mt-3">
-            &nbsp;
-          </div>
+
+          <div class="mt-3">&nbsp;</div>
 
           <!-- Przycisk akcji -->
           <div class="d-flex justify-content-end gap-2">
@@ -79,162 +78,162 @@
   </div>
 </template>
 
-<script>
-import('@vueform/slider/themes/default.css');
-import Slider from '@vueform/slider'
-import Loader from '@/component/Loader.vue'
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.css'
-import SmallLoader from '@/component/SmallLoader';
+<script setup>
+import '@vueform/slider/themes/default.css';
+import Slider from '@vueform/slider';
+import Loader from '@/component/Loader.vue';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.css';
+import SmallLoader from '@/component/SmallLoader.vue';
 
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 
-export default {
-  name: 'ProductFilter',
-  components: {
-    Loader,
-    Slider,
-    Multiselect,
-    SmallLoader,
+// Props
+const props = defineProps({
+  category: {
+    type: String,
+    default: null,
   },
-  props: {
-    category: {
-      type: String,
-      default: null,
-    },
-    smallLoading: {
-      type: Boolean,
-      default: false,
-    },
+  smallLoading: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      debounceTimeout: null,
-      categories: [],
-      loadingRange: false,
-      priceRange: {
-        min: 0,
-        max: 10000,
-      },
-      filters: {
-        name: '',
-        category: '',
-        price_min: 0,
-        price_max: 0,
-        is_active: true,
-      },
+});
+
+// Emit
+const emit = defineEmits(['apply-filters']);
+
+// State
+const debounceTimeout = ref(null);
+const categories = ref([]);
+const loadingRange = ref(false);
+
+const priceRange = reactive({
+  min: 0,
+  max: 10000,
+});
+
+const filters = reactive({
+  name: '',
+  category: '',
+  price_min: 0,
+  price_max: 0,
+  is_active: true,
+});
+
+// Computed
+const priceRangeModel = computed({
+  get: () => [filters.price_min, filters.price_max],
+  set: ([min, max]) => {
+    filters.price_min = min;
+    filters.price_max = max;
+  },
+});
+
+// Watchers
+watch(
+    () => [filters.price_min, filters.price_max],
+    () => {
+      debouncedApplyFilters();
     }
-  },
-  created() {
-    this.filters.category = this.ucfirst(this.category)
-  },
-  computed: {
-    priceRangeModel: {
-      get() {
-        return [this.filters.price_min, this.filters.price_max]
-      },
-      set([min, max]) {
-        this.filters.price_min = min
-        this.filters.price_max = max
-      },
-    },
-  },
-  watch: {
-    'filters.price_min'(val) {
-      this.debouncedApplyFilters()
-    },
-    'filters.price_max'(val) {
-      this.debouncedApplyFilters()
-    },
-    category(newVal) {
-      // this.fetchPriceRange()
-      this.filters.category = newVal ? this.ucfirst(newVal) : ''
-    },
-  },
-  methods: {
-    debouncedApplyFilters() {
-      clearTimeout(this.debounceTimeout)
-      this.debounceTimeout = setTimeout(() => {
-        this.applyFilters()
-      }, 1000)
-    },
-    async fetchPriceRange(newCategory) {
-      this.loadingRange = true
-      try {
-        if(newCategory === null) {
-          this.filters.category = '';
-        }
-        const categoryParam = this.filters.category ? `/${encodeURIComponent(this.filters.category)}` : ''
-        console.log(categoryParam);
-        const response = await fetch(`/api/product/range-price${categoryParam}`)
-        if (!response.ok) throw new Error('Błąd pobierania zakresu cenowego')
+);
 
-        const data = await response.json()
-        this.priceRange.min = data.minPrice || 0
-        this.priceRange.max = data.maxPrice || 10000
+watch(
+    () => props.category,
+    (newVal) => {
+      filters.category = newVal ? ucfirst(newVal) : '';
+      // fetchPriceRange(); // jeśli chcesz odświeżać zakres cen przy zmianie kategorii
+    }
+);
 
-        this.filters.price_min = this.priceRange.min
-        this.filters.price_max = this.priceRange.max
+// Methods
+const debouncedApplyFilters = () => {
+  clearTimeout(debounceTimeout.value);
+  debounceTimeout.value = setTimeout(() => {
+    applyFilters();
+  }, 1000);
+};
 
-        // this.resetPriceSliders()
-      } catch (error) {
-        console.error(error)
-      } finally {
-        this.loadingRange = false
-      }
-    },
-    async fetchProductType() {
-      this.loadingRange = true
-      try {
-        const response = await fetch(`/api/product-type/list`)
-        if (!response.ok) throw new Error('Błąd pobierania kategorii produktów')
+const fetchPriceRange = async (newCategory = null) => {
+  loadingRange.value = true;
+  try {
+    if (newCategory === null) {
+      filters.category = '';
+    }
+    const categoryParam = filters.category
+        ? `/${encodeURIComponent(filters.category)}`
+        : '';
+    const response = await fetch(`/api/product/range-price${categoryParam}`);
+    if (!response.ok) throw new Error('Błąd pobierania zakresu cenowego');
 
-        const data = await response.json()
-        this.categories = data.data
+    const data = await response.json();
+    priceRange.min = data.minPrice || 0;
+    priceRange.max = data.maxPrice || 10000;
 
-        if (this.filters.category) {
-            const match = this.categories.find(
-                (c) => c.link.toLowerCase() === this.filters.category.toLowerCase()
-            )
-            this.filters.category = match || null
-        }
-      } catch (error) {
-        this.categories = []
-        console.error(error)
-      } finally {
-        this.loadingRange = false
-      }
-    },
-    ucfirst(str) {
-      if (!str) return ''
-      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-    },
-    async applyFilters() {
-      this.$emit('apply-filters', {...this.filters})
-    },
-    resetPriceSliders() {
-      this.filters.price_min = this.priceRange.min
-      this.filters.price_max = this.priceRange.max
-    },
-    resetFilters() {
-      this.filters.name = ''
-      this.filters.type = ''
-      this.filters.is_active = true
-      this.filters.category = ''
-      this.fetchPriceRange(null);
-      // this.filters.price_min = this.priceRange.min
-      // this.filters.price_max = this.priceRange.max
+    filters.price_min = priceRange.min;
+    filters.price_max = priceRange.max;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loadingRange.value = false;
+  }
+};
 
-      // this.resetPriceSliders()
-      this.applyFilters()
-    },
-  },
-  mounted() {
-    this.fetchProductType()
-    this.fetchPriceRange()
-  },
-}
+const fetchProductType = async () => {
+  loadingRange.value = true;
+  try {
+    const response = await fetch(`/api/product-type/list`);
+    if (!response.ok) throw new Error('Błąd pobierania kategorii produktów');
+
+    const data = await response.json();
+    categories.value = data.data;
+
+    if (filters.category) {
+      const match = categories.value.find(
+          (c) => c.link.toLowerCase() === filters.category.toLowerCase()
+      );
+      filters.category = match || null;
+    }
+  } catch (error) {
+    categories.value = [];
+    console.error(error);
+  } finally {
+    loadingRange.value = false;
+  }
+};
+
+const ucfirst = (str) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+const applyFilters = () => {
+  emit('apply-filters', { ...filters });
+};
+
+const resetPriceSliders = () => {
+  filters.price_min = priceRange.min;
+  filters.price_max = priceRange.max;
+};
+
+const resetFilters = () => {
+  filters.name = '';
+  filters.type = '';
+  filters.is_active = true;
+  filters.category = '';
+  fetchPriceRange(null);
+  applyFilters();
+};
+
+// Lifecycle
+onMounted(() => {
+  if (props.category) {
+    filters.category = ucfirst(props.category);
+  }
+  fetchProductType();
+  fetchPriceRange();
+});
 </script>
 
 <style scoped>
-
 </style>

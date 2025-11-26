@@ -22,7 +22,7 @@ class Contact
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $surname;
+    private ?string $surname=null;
 
     #[ORM\Column(length: 100)]
     private ?string $email = null;
@@ -201,18 +201,18 @@ class Contact
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getNote(): string
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
     /**
-     * @param string $note
-     * @return Contact
+     * @param string|null $note
+     * @return $this
      */
-    public function setNote(string $note): Contact
+    public function setNote(?string $note): Contact
     {
         $this->note = $note;
         return $this;

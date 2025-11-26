@@ -33,7 +33,7 @@ class Client
     private ?string $email = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $phoneNumber = null;
+    private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $country = null;
@@ -53,8 +53,30 @@ class Client
 //    #[ORM\OneToMany(targetEntity: ClientAddress::class, mappedBy: 'client')]
 //    private Collection $address;
 
-    public function __construct()
-    {
+    public function __construct(
+        ?string $name = null,
+        ?string $nip = null,
+        ?string $regon = null,
+        ?string $pesel = null,
+        ?string $email = null,
+        ?string $phoneNumber = null,
+        ?string $country = null,
+        ?string $phonePrefix = null,
+        ?bool $isCompany = false,
+        ?bool $isDelete = false
+    ) {
+        $this->name = $name;
+        $this->nip = $nip;
+        $this->regon = $regon;
+        $this->pesel = $pesel;
+        $this->email = $email;
+        $this->phoneNumber = $phoneNumber;
+        $this->country = $country;
+        $this->phonePrefix = $phonePrefix;
+        $this->isCompany = $isCompany ?? false;
+        $this->isDelete = $isDelete ?? false;
+
+        // jeśli kolekcja adresów będzie używana
         $this->address = new ArrayCollection();
     }
 
@@ -123,12 +145,12 @@ class Client
         return $this;
     }
 
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
 
-    public function setPhoneNumber(?int $phoneNumber): static
+    public function setPhoneNumber(?string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
 

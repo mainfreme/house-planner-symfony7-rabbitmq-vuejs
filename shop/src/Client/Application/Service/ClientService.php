@@ -6,6 +6,7 @@ namespace App\Client\Application\Service;
 
 use App\Client\Application\Dto\ClientDto;
 use App\Client\Application\Dto\ClientFilterDto;
+use App\Client\Application\Exceptions\ClientException;
 use App\Shared\Application\Dto\ColumnCollectionDto;
 use App\Client\Domain\Entity\Client;
 use App\Client\Domain\Repository\ClientRepositoryInterface;
@@ -102,6 +103,23 @@ class ClientService
         $this->setClientCache($client, $cacheKey);
 
         return $client;
+    }
+
+    public function save(ClientDto $clientDto): Client
+    {
+        $clientEntity = new Client(
+            $clientDto->name,
+            $clientDto->nip,
+            $clientDto->regon,
+            $clientDto->pesel,
+            $clientDto->email,
+            $clientDto->country,
+            $clientDto->phonePrefix,
+            $clientDto->phoneNumber,
+            $clientDto->isCompany
+        );
+
+        return $this->clientRepository->save($clientEntity);
     }
 
     public function getFields(): ColumnCollectionDto
