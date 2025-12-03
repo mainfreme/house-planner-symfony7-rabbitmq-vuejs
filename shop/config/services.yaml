@@ -25,9 +25,13 @@ services:
         calls:
             - [ connect, [ 'redis', 6379 ] ]
 
-#    App\Client\Infrastructure\Company:
-#        arguments:
-#            $apiKey: '%env(GUS_API_KEY)%'
+    App\Client\Infrastructure\Company\GUSApiClient:
+        arguments:
+            $apiKey: '%env(GUS_API_KEY)%'
+
+    App\Client\Application\Query\Handler\GetCompanyByNipHandler:
+        arguments:
+            $gusApiClient: '@App\Client\Infrastructure\Company\GUSApiClient'
 
     App\Product\Infrastructure\Persistence\Doctrine\:
         resource: '../src/Product/Infrastructure/Persistence/Doctrine/*'
