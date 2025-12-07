@@ -7,14 +7,14 @@ namespace App\Client\Domain\Entity;
 use App\Client\Infrastructure\Persistence\Doctrine\ClientAddressRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: ClientAddressRepository::class)]
 class ClientAddress
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $street = null;
@@ -46,18 +46,18 @@ class ClientAddress
     #[ORM\Column]
     private ?\DateTimeImmutable $added_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'address')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'client_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?Client $client = null;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
     }
 
-    public function setId(int $id): static
+    public function setUuid(UuidInterface $uuid): static
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
 
         return $this;
     }

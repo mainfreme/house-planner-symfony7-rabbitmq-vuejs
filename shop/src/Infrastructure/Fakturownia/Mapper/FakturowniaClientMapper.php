@@ -21,27 +21,16 @@ class FakturowniaClientMapper
     {
         // 1. Mapowanie Client
         $client = new Client(
-        // id (autoincrement, nie mapujemy)
-        // name (string)
-            $fakturowniaData['name'],
-            // nip (varchar(255))
-            isset($fakturowniaData['tax_no']) ? new Nip($fakturowniaData['tax_no']) : null,
-            // regon (varchar(255))
-            null, // Brak bezpośredniego odpowiednika w popularnych polach klienta Fakturowni (zwykle jest tylko tax_no/NIP)
-            // pesel (varchar(255))
-            null, // Brak bezpośredniego odpowiednika
-            // email (varchar(255))
-            $fakturowniaData['email'] ?? null,
-            // phone_number (varchar(15))
-            $fakturowniaData['phone'] ?? null,
-            // country (varchar(255))
-            $fakturowniaData['country'] ?? null,
-            // phone_prefix (varchar(5))
-            null, // Brak bezpośredniego odpowiednika
-            // is_delete (boolean)
-            $fakturowniaData['is_archived'] ?? false, // Mapowanie is_archived z Fakturowni na is_delete w bazie.
-            // is_company (boolean)
-            ($fakturowniaData['kind'] ?? 'company') === 'company' // 'company' vs 'person'
+            name: $fakturowniaData['name'],
+            nip: isset($fakturowniaData['tax_no']) ? (string)new Nip($fakturowniaData['tax_no']) : 'BRAK',
+            country: $fakturowniaData['country'] ?? 'Polska',
+            phonePrefix: '+48', // Domyślny prefix dla Polski
+            regon: null, // Brak bezpośredniego odpowiednika w popularnych polach klienta Fakturowni
+            pesel: null, // Brak bezpośredniego odpowiednika
+            email: $fakturowniaData['email'] ?? null,
+            phoneNumber: $fakturowniaData['phone'] ?? null,
+            isCompany: ($fakturowniaData['kind'] ?? 'company') === 'company', // 'company' vs 'person'
+            isDelete: $fakturowniaData['is_archived'] ?? false // Mapowanie is_archived z Fakturowni na is_delete
         );
 
         // 2. Mapowanie ClientAddress (zakładamy, że jest 1 adres główny)

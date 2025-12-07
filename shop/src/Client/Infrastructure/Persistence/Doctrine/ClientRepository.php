@@ -18,6 +18,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @extends ServiceEntityRepository<Client>
@@ -42,22 +43,22 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
      */
     public function findById(int $id): ?ClientDto
     {
-        $client = $this->entityManager->find(Client::class, $id);
+        $client = $this->entityManager->find(Client::class, $uuid);
 
         return ClientDto::fromEntity($client);
     }
 
-    public function findClientById(int $id): ?Client
+    public function findClientById(UuidInterface $uuid): ?Client
     {
-        return $this->entityManager->find(Client::class, $id);
+        return $this->entityManager->find(Client::class, $uuid);
     }
 
-    public function checkIfExist(int $id): bool
+    public function checkIfExist(UuidInterface $uuid): bool
     {
         $qb = $this->createQueryBuilder('c')
             ->select('1')
-            ->where('c.id = :id')
-            ->setParameter('id', $id)
+            ->where('c.uuid = :uuid')
+            ->setParameter('uuid', $uuid)
             ->getQuery()
             ->getOneOrNullResult();
 
@@ -130,10 +131,10 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 
     public function update(ClientDto $clientDto): Client
     {
-        $client = $this->entityManager->find(Client::class, $clientDto->id);
+        $client = $this->entityManager->find(Client::class, $clientDto->uuid);
 
         foreach (get_object_vars($clientDto) as $property => $value) {
-            if ($value !== null and $property !== 'id') {
+            if ($value !== null and $property !== 'uuid') {
                 $this->accessor->setValue($client, $property, $value);
             }
         }
@@ -150,8 +151,8 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
      */
     public function save(Client $newClient): Client
     {
-        $client = $newClient->getId()
-            ? $this->find($newClient->getId())
+        $client = $newClient->getUuid()
+            ? $this->find($newClient->getUuid())
             : new Client();
 
         if (!$client) {

@@ -5,15 +5,15 @@ namespace App\Domain\History\Entity;
 use App\Infrastructure\Persistence\Doctrine\History\HistoryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: HistoryRepository::class)]
 #[ORM\Table(name: 'history')]
 class History
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $class = null;
@@ -30,9 +30,16 @@ class History
     #[ORM\Column]
     private ?\DateTimeImmutable $modify_at = null;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
+    }
+
+    public function setUuid(UuidInterface $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     public function getClass(): ?string

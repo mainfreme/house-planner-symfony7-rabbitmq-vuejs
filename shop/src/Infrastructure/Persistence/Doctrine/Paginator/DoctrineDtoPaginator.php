@@ -63,7 +63,7 @@ final class DoctrineDtoPaginator
     private static function countTotalRow(QueryBuilder $countQb): int
     {
         $result = $countQb
-            ->select('COUNT(DISTINCT ' . $countQb->getRootAliases()[0] . '.id) AS total')
+            ->select('COUNT(DISTINCT ' . $countQb->getRootAliases()[0] . '.uuid) AS total')
             ->getQuery()
             ->getOneOrNullResult();
 

@@ -23,13 +23,30 @@ class GUSApiClient
         try {
             $params = ['pNip' => $nip];
             $response = $this->client->DaneSzukajPodmioty($params);
+            
             if (empty($response->DaneSzukajPodmiotyResult)) {
                 return null;
             }
 
-            return (array)$response->DaneSzukajPodmiotyResult->Dane;
+            $result = $response->DaneSzukajPodmiotyResult;
+            
+            // Sprawdź czy wynik jest tablicą czy pojedynczym obiektem
+            if (is_array($result->Dane)) {
+                // Jeśli jest tablica, weź pierwszy element
+                $data = $result->Dane[0] ?? null;
+            } else {
+                // Jeśli jest pojedynczy obiekt
+                $data = $result->Dane ?? null;
+            }
+
+            if ($data === null) {
+                return null;
+            }
+
+            // Konwertuj obiekt na tablicę
+            return (array)$data;
         } catch (SoapFault $e) {
-            throw new \RuntimeException('Błąd połączenia z GUS: ' . $e->getMessage());
+            throw new \RuntimeException('Błąd połączenia z GUS: ' . $e->getMessage(), 0, $e);
         }
     }
 }

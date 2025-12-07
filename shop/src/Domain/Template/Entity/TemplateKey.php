@@ -4,30 +4,30 @@ namespace App\Domain\Template\Entity;
 
 use App\Repository\TemplateKeyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: TemplateKeyRepository::class)]
 class TemplateKey
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\OneToOne(inversedBy: 'key', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'template_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?Template $template = null;
 
     #[ORM\Column(length: 255)]
     private ?string $key = null;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
     }
 
-    public function setId(int $id): static
+    public function setUuid(UuidInterface $uuid): static
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
 
         return $this;
     }

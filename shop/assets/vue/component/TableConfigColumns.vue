@@ -26,7 +26,7 @@
           </div>
 
           <div class="modal-body">
-            <div class="loader-wrapper" v-if="smallLoader">
+            <div class="loader-wrapper" v-if="smallLoader.value">
               <SmallLoader :active="smallLoader.value" :size="30"/>
             </div>
             <div v-if="!smallLoader.value" v-for="col in allColumns" :key="col.key" class="form-check">
@@ -98,17 +98,18 @@ onMounted(() => {
     try {
       const objSave = JSON.parse(saved)
       visibleColumnKeys.value = objSave.visibleKeys
-      setTimeout(() => (smallLoader.value = false), 3000)
+      setTimeout(() => {
+        smallLoader.value = false
+      }, 3000)
     } catch (e) {
       console.warn('Nie udało się sparsować localStorage:', e)
       resetColumns()
-    } finally {
       smallLoader.value = false
     }
   } else {
     resetColumns()
+    smallLoader.value = false
   }
-  smallLoader.value = false
 })
 
 async function toggleColumnConfig(type = 'toggle') {

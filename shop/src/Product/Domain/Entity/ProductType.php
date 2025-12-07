@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Product\Domain\Entity;
 
 use App\Product\Infrastructure\Persistence\Doctrine\ProductTypeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: ProductTypeRepository::class)]
 #[ORM\Table(name: "product_type")]
 class ProductType
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -23,14 +25,14 @@ class ProductType
     #[ORM\Column]
     private ?bool $is_public = null;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
     }
 
-    public function setId(int $id): static
+    public function setUuid(UuidInterface $uuid): static
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
 
         return $this;
     }

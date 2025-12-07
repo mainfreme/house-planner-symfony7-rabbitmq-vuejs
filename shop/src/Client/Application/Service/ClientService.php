@@ -108,15 +108,16 @@ class ClientService
     public function save(ClientDto $clientDto): Client
     {
         $clientEntity = new Client(
-            $clientDto->name,
-            $clientDto->nip,
-            $clientDto->regon,
-            $clientDto->pesel,
-            $clientDto->email,
-            $clientDto->country,
-            $clientDto->phonePrefix,
-            $clientDto->phoneNumber,
-            $clientDto->isCompany
+            name: $clientDto->name,
+            nip: $clientDto->nip,
+            country: $clientDto->country,
+            phonePrefix: $clientDto->phonePrefix,
+            regon: $clientDto->regon,
+            pesel: $clientDto->pesel,
+            email: $clientDto->email,
+            phoneNumber: $clientDto->phoneNumber,
+            isCompany: $clientDto->isCompany,
+            isDelete: $clientDto->isDelete ?? false
         );
 
         return $this->clientRepository->save($clientEntity);

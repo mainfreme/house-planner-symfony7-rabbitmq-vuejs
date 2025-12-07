@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace App\Client\Domain\Entity;
 
+use App\Client\Domain\Entity\ClientAddress;
 use App\Client\Infrastructure\Persistence\Doctrine\ClientRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nip = null;
+    private string $nip;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $regon = null;
@@ -32,38 +31,36 @@ class Client
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(name: 'number_phone', length: 15, nullable: true)]
     private ?string $phoneNumber = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $country = null;
+    #[ORM\Column(length: 255)]
+    private string $country;
 
-    #[ORM\Column(length: 5, nullable: true)]
-    private ?string $phonePrefix = null;
+    #[ORM\Column(length: 5)]
+    private string $phonePrefix;
 
-    #[ORM\Column(type: 'boolean', nullable: true, options: ['default' => false])]
-    private ?bool $isDelete = null;
+    #[ORM\Column(name: 'is_delete', type: 'boolean', options: ['default' => false])]
+    private bool $isDelete = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true, options: ['default' => false])]
+    #[ORM\Column(name: 'is_company', type: 'boolean', options: ['default' => false])]
     private bool $isCompany = false;
 
-//    /**
-//     * @var Collection<int, ClientAddress>
-//     */
-//    #[ORM\OneToMany(targetEntity: ClientAddress::class, mappedBy: 'client')]
-//    private Collection $address;
+    #[ORM\OneToOne(targetEntity: ClientAddress::class)]
+    #[ORM\JoinColumn(name: 'address_uuid', referencedColumnName: 'uuid')]
+    private ?ClientAddress $address = null;
 
     public function __construct(
-        ?string $name = null,
-        ?string $nip = null,
+        string $name,
+        string $nip,
+        string $country,
+        string $phonePrefix,
         ?string $regon = null,
         ?string $pesel = null,
         ?string $email = null,
         ?string $phoneNumber = null,
-        ?string $country = null,
-        ?string $phonePrefix = null,
-        ?bool $isCompany = false,
-        ?bool $isDelete = false
+        bool $isCompany = false,
+        bool $isDelete = false
     ) {
         $this->name = $name;
         $this->nip = $nip;
@@ -73,16 +70,20 @@ class Client
         $this->phoneNumber = $phoneNumber;
         $this->country = $country;
         $this->phonePrefix = $phonePrefix;
-        $this->isCompany = $isCompany ?? false;
-        $this->isDelete = $isDelete ?? false;
-
-        // jeśli kolekcja adresów będzie używana
-        $this->address = new ArrayCollection();
+        $this->isCompany = $isCompany;
+        $this->isDelete = $isDelete;
     }
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
+    }
+
+    public function setUuid(UuidInterface $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -97,7 +98,7 @@ class Client
         return $this;
     }
 
-    public function getNip(): ?string
+    public function getNip(): string
     {
         return $this->nip;
     }
@@ -157,7 +158,7 @@ class Client
         return $this;
     }
 
-    public function getCountry(): ?string
+    public function getCountry(): string
     {
         return $this->country;
     }
@@ -169,7 +170,7 @@ class Client
         return $this;
     }
 
-    public function getPhonePrefix(): ?string
+    public function getPhonePrefix(): string
     {
         return $this->phonePrefix;
     }
@@ -199,31 +200,113 @@ class Client
 //        return $this;
 //    }
 
-//    public function removeAddress(ClientAddress $address): static
-//    {
-//        if ($this->address->removeElement($address)) {
-//            // set the owning side to null (unless already changed)
-//            if ($address->getClient() === $this) {
-//                $address->setClient(null);
-//            }
-//        }
-//
-//        return $this;
-//    }
+    public function getAddress(): ?ClientAddress
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?ClientAddress $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
 
     /**
-     * @return bool|null
+     * Sprawdza czy klient ma przypisany adres
      */
-    public function getIsDelete(): ?bool
+    public function hasAddress(): bool
+    {
+        return $this->address !== null;
+    }
+
+    /**
+     * Pobiera ulicę z powiązanego adresu
+     */
+    public function getAddressStreet(): ?string
+    {
+        return $this->address?->getStreet();
+    }
+
+    /**
+     * Pobiera miasto z powiązanego adresu
+     */
+    public function getAddressCity(): ?string
+    {
+        return $this->address?->getCity();
+    }
+
+    /**
+     * Pobiera kod pocztowy z powiązanego adresu
+     */
+    public function getAddressPostalCode(): ?string
+    {
+        return $this->address?->getPostalCode();
+    }
+
+    /**
+     * Sprawdza czy klient jest osobą fizyczną (na podstawie obecności PESEL)
+     */
+    public function isIndividual(): bool
+    {
+        return !empty($this->pesel);
+    }
+
+    /**
+     * Sprawdza czy klient jest firmą (na podstawie flagi isCompany)
+     */
+    public function isCompanyEntity(): bool
+    {
+        return $this->isCompany;
+    }
+
+    /**
+     * Sprawdza czy klient jest oznaczony do usunięcia
+     */
+    public function isMarkedForDeletion(): bool
     {
         return $this->isDelete;
     }
 
     /**
-     * @param bool|null $isDelete
-     * @return static
+     * Pobiera pełny adres jako string
      */
-    public function setIsDelete(?bool $isDelete): static
+    public function getFullAddress(): ?string
+    {
+        if (!$this->address) {
+            return null;
+        }
+
+        $parts = array_filter([
+            $this->address->getStreet(),
+            $this->address->getHouseNumber(),
+            $this->address->getApartmentNumber() ? '/' . $this->address->getApartmentNumber() : null,
+            $this->address->getPostalCode(),
+            $this->address->getCity(),
+            $this->address->getCountry()
+        ]);
+
+        return implode(', ', $parts);
+    }
+
+    /**
+     * Pobiera informacje kontaktowe jako array
+     */
+    public function getContactInfo(): array
+    {
+        return [
+            'email' => $this->email,
+            'phone' => $this->phoneNumber ? $this->phonePrefix . ' ' . $this->phoneNumber : null,
+            'country' => $this->country
+        ];
+    }
+
+    public function getIsDelete(): bool
+    {
+        return $this->isDelete;
+    }
+
+    public function setIsDelete(bool $isDelete): static
     {
         $this->isDelete = $isDelete;
         return $this;
@@ -234,7 +317,7 @@ class Client
         return $this->isCompany;
     }
 
-    public function setIsCompany(bool $isCompany): Client
+    public function setIsCompany(bool $isCompany): static
     {
         $this->isCompany = $isCompany;
         return $this;

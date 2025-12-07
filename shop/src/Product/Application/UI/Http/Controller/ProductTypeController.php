@@ -42,4 +42,14 @@ class ProductTypeController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/list', name: 'product_type_list', methods: ['GET'])]
+    public function list(ProductTypeRepository $productTypeRepository): Response
+    {
+        $productTypes = $productTypeRepository->findAll();
+
+        return $this->render('@product/productType/list.html.twig', [
+            'products' => $productTypes,
+        ]);
+    }
 }

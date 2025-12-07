@@ -24,7 +24,6 @@ class MenuController extends AbstractController
         $menuService = new MenuService($this->typeProductRepository);
         $menu = $menuService->getMenuItems();
 
-
         return $this->render('@menu_admin/menu/menu.html.twig', [
             'menuItems' => $menu,
         ]);

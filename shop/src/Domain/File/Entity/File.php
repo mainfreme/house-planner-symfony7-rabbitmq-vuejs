@@ -8,15 +8,14 @@ use App\Product\Domain\Entity\Product;
 use App\Repository\FileRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 class File
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $file_name = null;
@@ -40,15 +39,22 @@ class File
     private ?bool $is_active = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'product_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?Product $product = null;
 
     #[ORM\Column(type: 'uuid')]
-    private ?Uuid $uuid = null;
+    private UuidInterface $legacyUuid;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
+    }
+
+    public function setUuid(UuidInterface $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     /**
@@ -159,14 +165,14 @@ class File
         return $this;
     }
 
-    public function getUuid(): ?Uuid
+    public function getLegacyUuid(): UuidInterface
     {
-        return $this->uuid;
+        return $this->legacyUuid;
     }
 
-    public function setUuid(Uuid $uuid): static
+    public function setLegacyUuid(UuidInterface $legacyUuid): static
     {
-        $this->uuid = $uuid;
+        $this->legacyUuid = $legacyUuid;
 
         return $this;
     }

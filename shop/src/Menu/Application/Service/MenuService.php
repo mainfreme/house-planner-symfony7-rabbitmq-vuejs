@@ -119,7 +119,7 @@ class MenuService
                 'children' => [
                     ['title' => 'Profil', 'link' => '/settings/profile'],
                     ['title' => 'Bezpieczeństwo', 'link' => '/settings/security'],
-                    ['title' => 'Akcje', 'link' => $this->urlGenerator->generate('settings_action', ['name' => ''], UrlGeneratorInterface::RELATIVE_PATH)],
+                    ['title' => 'Akcje', 'link' => $this->urlGenerator->generate('settings_action', [], UrlGeneratorInterface::RELATIVE_PATH)],
                 ]
             ]
         ];

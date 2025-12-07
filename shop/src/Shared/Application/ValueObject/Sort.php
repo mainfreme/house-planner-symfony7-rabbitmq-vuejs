@@ -19,7 +19,7 @@ class Sort
 
         $this->field = $field && in_array($field, $allowedColumns, true)
             ? $field
-            : 'id';
+            : 'uuid';
 
         $this->direction = $direction && in_array(strtoupper($direction), self::DIRECTION, true)
             ? strtoupper($direction)

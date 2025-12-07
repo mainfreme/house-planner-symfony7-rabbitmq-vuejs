@@ -7,20 +7,20 @@ use App\Domain\Template\Enum\TemplateEnum;
 use App\Repository\TemplateRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: TemplateRepository::class)]
 class Template
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'file_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?File $File = null;
 
     #[ORM\Column(enumType: TemplateEnum::class)]
@@ -35,14 +35,14 @@ class Template
     #[ORM\OneToOne(mappedBy: 'template', cascade: ['persist', 'remove'])]
     private ?TemplateKey $key = null;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
     }
 
-    public function setId(int $id): static
+    public function setUuid(UuidInterface $uuid): static
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
 
         return $this;
     }

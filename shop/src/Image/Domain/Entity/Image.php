@@ -15,9 +15,8 @@ use Ramsey\Uuid\UuidInterface;
 class Image
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $data = null;
@@ -32,18 +31,25 @@ class Image
     private ?bool $is_active = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'product_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?Product $product = null;
 
     #[ORM\Column(type: 'uuid')]
-    private ?UuidInterface $uuid = null;
+    private UuidInterface $legacyUuid;
 
     #[ORM\Column(nullable: true)]
     private ?bool $is_main = null;
 
-    public function getId(): ?int
+    public function getUuid(): UuidInterface
     {
-        return $this->id;
+        return $this->uuid;
+    }
+
+    public function setUuid(UuidInterface $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     public function getData(): ?string
@@ -106,14 +112,14 @@ class Image
         return $this;
     }
 
-    public function getUuid(): ?UuidInterface
+    public function getLegacyUuid(): UuidInterface
     {
-        return $this->uuid;
+        return $this->legacyUuid;
     }
 
-    public function setUuid(UuidInterface $uuid): static
+    public function setLegacyUuid(UuidInterface $legacyUuid): static
     {
-        $this->uuid = $uuid;
+        $this->legacyUuid = $legacyUuid;
 
         return $this;
     }

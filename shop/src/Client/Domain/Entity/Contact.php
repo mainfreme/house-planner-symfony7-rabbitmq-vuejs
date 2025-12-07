@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace App\Client\Domain\Entity;
 
 use App\Client\Infrastructure\Persistence\Doctrine\ClientContactRepository;
-
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 
 #[ORM\Entity(repositoryClass: ClientContactRepository::class)]
 class Contact
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid')]
+    private UuidInterface $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -45,15 +44,26 @@ class Contact
     #[ORM\Column]
     private ?\DateTimeImmutable $added_at = null;
 
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'client_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?Client $client = null;
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
-        return $this->id;
+        // For backward compatibility, return null since UUID can't be converted to int
+        return null;
+    }
+
+    public function getUuid(): UuidInterface
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(UuidInterface $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     /**

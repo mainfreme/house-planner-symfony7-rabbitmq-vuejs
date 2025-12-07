@@ -8,66 +8,111 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             {% if menuService.getMenuItems() is not empty %}
-                {% for item in menuService.getMenuItems() %}
-                    {#                {% if item.isGranted is not defined %} #}
-                    <ul class="navbar-nav ms-auto">
-                        {% if item.children is empty %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ item.link }}">{{ item.title }}</a>
-                            </li>
+                {# Menu po lewej stronie - wszystkie oprócz Ustawienia #}
+                <ul class="navbar-nav me-auto">
+                    {% for item in menuService.getMenuItems() %}
+                        {% if item.title != 'Ustawienia' %}
+                            {# {% if item.isGranted is not defined or item.isGranted is empty or is_granted(item.isGranted[0]) %} #}
+                                {% if item.children is empty or item.children|length == 0 %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ item.link }}">{{ item.title }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="dropdown-{{ loop.index }}" role="button"
+                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                            {{ item.title }}
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdown-{{ loop.index }}">
+                                            {% for child in item.children %}
+                                                <li><a class="dropdown-item" href="{{ child.link }}">{{ child.title }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                            {# {% endif %} #}
                         {% endif %}
-                    </ul>
-                    <ul class="navbar-nav ms-auto">
-                        {% if item.children is not empty %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button"
-                                   data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                    {{ item.title }}
-                                </a>
+                    {% endfor %}
+                </ul>
 
-                                <ul class="dropdown-menu" aria-labelledby="menuDropdown">
-                                    {% for child in item.children %}
-                                        <li><a class="dropdown-item" href="{{ child.link }}">{{ child.title }}</a></li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
+                {# Menu po prawej stronie - tylko Ustawienia #}
+                <ul class="navbar-nav ms-auto">
+                    {% for item in menuService.getMenuItems() %}
+                        {% if item.title == 'Ustawienia' %}
+                            {# {% if item.isGranted is not defined or item.isGranted is empty or is_granted(item.isGranted[0]) %} #}
+                                {% if item.children is empty or item.children|length == 0 %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ item.link }}">{{ item.title }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="dropdown-settings" role="button"
+                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                            {{ item.title }}
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-settings">
+                                            {% for child in item.children %}
+                                                <li><a class="dropdown-item" href="{{ child.link }}">{{ child.title }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                            {# {% endif %} #}
                         {% endif %}
-                    </ul>
-                    {#                {% endif %} #}
-                {% endfor %}
+                    {% endfor %}
+                </ul>
             {% endif %}
         </div>
     </div>
 </nav>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const menuItems = document.querySelectorAll(".menu-item.has-children");
+    // Inicjalizacja dropdownów Bootstrap 5
+    function initBootstrapDropdowns() {
+        // Sprawdź czy Bootstrap jest dostępny
+        if (typeof bootstrap === 'undefined') {
+            console.log('Bootstrap nie jest jeszcze załadowany, czekam...');
+            // Jeśli Bootstrap nie jest jeszcze załadowany, spróbuj ponownie za 100ms
+            setTimeout(initBootstrapDropdowns, 100);
+            return;
+        }
 
-        menuItems.forEach(item => {
-            const link = item.querySelector(".menu-link");
+        console.log('Bootstrap jest dostępny, inicjalizuję dropdowny...');
 
-            link.addEventListener("click", function (e) {
-                e.preventDefault();
+        // Pobierz wszystkie elementy dropdown-toggle
+        const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+        console.log('Znaleziono ' + dropdownElementList.length + ' elementów dropdown');
+        
+        // Inicjalizuj każdy dropdown
+        dropdownElementList.forEach(function(dropdownToggleEl) {
+            try {
+                // Sprawdź czy dropdown nie jest już zainicjalizowany
+                const existingInstance = bootstrap.Dropdown.getInstance(dropdownToggleEl);
+                if (existingInstance) {
+                    console.log('Dropdown już zainicjalizowany:', dropdownToggleEl.id);
+                    return;
+                }
 
-                // Zamykamy wszystkie inne otwarte podmenu
-                menuItems.forEach(otherItem => {
-                    if (otherItem !== item) {
-                        otherItem.classList.remove("open");
-                    }
+                // Utwórz instancję dropdown dla każdego elementu
+                new bootstrap.Dropdown(dropdownToggleEl, {
+                    autoClose: true,
+                    boundary: 'viewport'
                 });
-
-                // Toggling otwierania podmenu
-                item.classList.toggle("open");
-            });
-        });
-
-        // Zamknij podmenu, jeśli klikniemy poza menu
-        document.addEventListener("click", function (event) {
-            if (!event.target.closest(".menu")) {
-                menuItems.forEach(item => item.classList.remove("open"));
+                console.log('Zainicjalizowano dropdown:', dropdownToggleEl.id || dropdownToggleEl.textContent);
+            } catch (e) {
+                console.error('Błąd inicjalizacji dropdown:', e, dropdownToggleEl);
             }
         });
-    });
+    }
+
+    // Uruchom inicjalizację po załadowaniu DOM i Bootstrap
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Poczekaj jeszcze chwilę na załadowanie Bootstrap JS
+            setTimeout(initBootstrapDropdowns, 50);
+        });
+    } else {
+        // DOM jest już załadowany, ale Bootstrap może jeszcze nie być
+        setTimeout(initBootstrapDropdowns, 50);
+    }
 </script>

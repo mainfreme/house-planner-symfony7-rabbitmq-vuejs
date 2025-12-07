@@ -14,22 +14,17 @@ use Ramsey\Uuid\UuidInterface;
 class Product
 {
 
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private ?string $price = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'type_uuid', referencedColumnName: 'uuid', nullable: false)]
     private ?ProductType $type = null;
 
     #[ORM\Column]
@@ -38,20 +33,13 @@ class Product
     #[ORM\Column]
     private array $parameters = [];
 
-    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid')]
     private UuidInterface $uuid;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private UuidInterface $legacyUuid;
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     public function getName(): ?string
     {
@@ -135,21 +123,25 @@ class Product
         return $this;
     }
 
-    /**
-     * @return UuidInterface
-     */
     public function getUuid(): UuidInterface
     {
         return $this->uuid;
     }
 
-    /**
-     * @param UuidInterface $uuid
-     * @return $this
-     */
     public function setUuid(UuidInterface $uuid): static
     {
         $this->uuid = $uuid;
+        return $this;
+    }
+
+    public function getLegacyUuid(): UuidInterface
+    {
+        return $this->legacyUuid;
+    }
+
+    public function setLegacyUuid(UuidInterface $legacyUuid): static
+    {
+        $this->legacyUuid = $legacyUuid;
         return $this;
     }
 }

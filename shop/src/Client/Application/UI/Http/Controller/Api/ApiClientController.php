@@ -81,6 +81,7 @@ class ApiClientController extends AbstractController
     #[Route('/add', name: 'add-client', methods: ['POST'])]
     public function add(Request $request): JsonResponse
     {
+
         $clientDto = $this->serializer->denormalize(
             $request->toArray(),
             ClientDto::class
